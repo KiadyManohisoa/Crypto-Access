@@ -15,8 +15,6 @@ public class Cryptomonnaie {
     private int quantite;
     private double valeur;
 
-    // Constructeur vide
-    public Cryptomonnaie() {}
 
     // Getters et setters
     public String getId() {
@@ -69,6 +67,22 @@ public class Cryptomonnaie {
         }
     }
 
+    // Constructeur vide
+    public Cryptomonnaie() {}
+    
+
+    public Cryptomonnaie(String id) {
+        setId(id);
+    }
+
+    public Cryptomonnaie(String id, String nom, int quantite, double valeur) {
+        setId(id);
+        setNom(nom);
+        setQuantite(quantite);
+        setValeur(valeur);
+    }
+    
+
     public static Cryptomonnaie[] getAllByCriteria(Connection connection, Utilisateur utilisateur) throws SQLException {
         
         String query = "SELECT id, nom, quantite, valeur FROM cryptomonnaie WHERE 1=1 ";
@@ -118,6 +132,21 @@ public class Cryptomonnaie {
         
         return null;
     }
+
+    public void insert(Connection connection) throws Exception {
+        String query = "INSERT INTO cryptomonnaie (id, nom, valeur) VALUES (DEFAULT, ?, ?)";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, getNom());
+            statement.setDouble(3, getValeur());
+            
+            statement.executeUpdate();
+            
+            ChangementCoursCrypto changement = new ChangementCoursCrypto(this);
+            changement.insererHistorique(connection);
+        }
+    }
+
 
     @Override
     public String toString() {
