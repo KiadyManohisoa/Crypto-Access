@@ -119,7 +119,7 @@ public class Utilisateur {
 
     // Méthode pour créer un portefeuille
     void creerPortefeuille(Connection connection) throws Exception {
-        String query = "INSERT INTO portefeuille (id, idUtilisateur) VALUES (DEFAULT, ?)";
+        String query = "INSERT INTO portefeuille (id, id_idUtilisateur) VALUES (DEFAULT, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, getId());
             statement.executeUpdate();
@@ -127,13 +127,14 @@ public class Utilisateur {
     }
 
     public void insert(Connection connection) throws Exception {
-        
+        System.out.println("Appel de la fonction insert");
         try {
             connection.setAutoCommit(false);
             insertUtilisateur(connection);
             creerPortefeuille(connection);
             connection.commit();
         } catch (Exception e) {
+            System.out.println("Erreur :"+e.getMessage());
             connection.rollback();
         } finally {
             connection.setAutoCommit(true);
@@ -141,7 +142,7 @@ public class Utilisateur {
     }
 
     public static Utilisateur getByMail(Connection connection, String mail) throws SQLException {
-        String query = "SELECT id, nom, prenom, mail FROM utilisateur WHERE mail = ?";
+        String query = "SELECT * FROM utilisateur WHERE mail = ?";
         
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, mail);

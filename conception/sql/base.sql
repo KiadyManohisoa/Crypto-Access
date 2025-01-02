@@ -1,4 +1,4 @@
-CREATE TABLE Utilisateur(
+CREATE TABLE utilisateur(
    id VARCHAR(14)  DEFAULT ('USR') || LPAD(NEXTVAL('s_Utilisateur')::TEXT, 9, '0'),
    mail VARCHAR(50)  NOT NULL,
    nom VARCHAR(100)  NOT NULL,

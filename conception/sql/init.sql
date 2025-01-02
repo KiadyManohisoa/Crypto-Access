@@ -2,6 +2,7 @@
 create database crypto ;
 \c crypto 
 
+CREATE SEQUENCE s_utilisateur START 1 INCREMENT 1 NO CYCLE;
 CREATE SEQUENCE s_crypto START 1 INCREMENT 1 NO CYCLE;
 CREATE SEQUENCE s_portefeuille_detail START 1 INCREMENT 1 NO CYCLE;
 CREATE SEQUENCE s_portefeuille START 1 INCREMENT 1 NO CYCLE;
