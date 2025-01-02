@@ -6,13 +6,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.crypto.exception.model.ValeurInvalideException;
-import com.crypto.model.utilisateur.Utilisateur;
 
 public class Cryptomonnaie {
 
     private String id;
     private String nom;
-    private int quantite;
     private double valeur;
 
 
@@ -31,23 +29,6 @@ public class Cryptomonnaie {
 
     public void setNom(String nom) {
         this.nom = nom;
-    }
-
-    public double getQuantite() {
-        return quantite;
-    }
-
-    public void setQuantite(int quantite) {
-        this.quantite = quantite;
-    }
-
-    public void setQuantite(String quantite) throws ValeurInvalideException{
-        try {
-            int q = Integer.valueOf(quantite);
-            setQuantite(q);
-        } catch (Exception e) {
-            throw new ValeurInvalideException("Valeur de quantité non numérique");
-        }
     }
 
     public double getValeur() {
@@ -75,21 +56,19 @@ public class Cryptomonnaie {
         setId(id);
     }
 
-    public Cryptomonnaie(String id, String nom, int quantite, double valeur) {
+    public Cryptomonnaie(String id, String nom, double valeur) {
         setId(id);
         setNom(nom);
-        setQuantite(quantite);
         setValeur(valeur);
     }
     
 
-    public static Cryptomonnaie[] getAllByCriteria(Connection connection, Utilisateur utilisateur) throws SQLException {
+    public static Cryptomonnaie[] getAll(Connection connection) throws SQLException {
         
-        String query = "SELECT id, nom, quantite, valeur FROM cryptomonnaie WHERE 1=1 ";
-        if(utilisateur!=null && !utilisateur.getId().isEmpty()) query+= " and idUtilisateur = ?" ; 
+        String query = "SELECT * FROM cryptomonnaie";
         
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            if(utilisateur!=null && !utilisateur.getId().isEmpty()) statement.setString(1, utilisateur.getId());
+        try (PreparedStatement statement = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {            
+            
             try (ResultSet resultSet = statement.executeQuery()) {
                 
                 resultSet.last();  
@@ -103,7 +82,6 @@ public class Cryptomonnaie {
                     Cryptomonnaie cryptomonnaie = new Cryptomonnaie();
                     cryptomonnaie.setId(resultSet.getString("id"));
                     cryptomonnaie.setNom(resultSet.getString("nom"));
-                    cryptomonnaie.setQuantite(resultSet.getInt("quantite"));
                     cryptomonnaie.setValeur(resultSet.getDouble("valeur"));
                     cryptomonnaies[index++] = cryptomonnaie;
                 }
@@ -114,7 +92,7 @@ public class Cryptomonnaie {
     }
 
     public static Cryptomonnaie getById(Connection connection, String id) throws SQLException {
-        String query = "SELECT id, nom, quantite, valeur FROM cryptomonnaie WHERE id = ?";
+        String query = "SELECT * FROM cryptomonnaie WHERE id = ?";
         
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, id);
@@ -123,7 +101,6 @@ public class Cryptomonnaie {
                     Cryptomonnaie cryptomonnaie = new Cryptomonnaie();
                     cryptomonnaie.setId(resultSet.getString("id"));
                     cryptomonnaie.setNom(resultSet.getString("nom"));
-                    cryptomonnaie.setQuantite(resultSet.getInt("quantite"));
                     cryptomonnaie.setValeur(resultSet.getDouble("valeur"));
                     return cryptomonnaie;
                 }
@@ -136,24 +113,66 @@ public class Cryptomonnaie {
     public void insert(Connection connection) throws Exception {
         String query = "INSERT INTO cryptomonnaie (id, nom, valeur) VALUES (DEFAULT, ?, ?)";
 
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
+        connection.setAutoCommit(false);
+        try (PreparedStatement statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {            
+            
             statement.setString(1, getNom());
-            statement.setDouble(3, getValeur());
+            statement.setDouble(2, getValeur());
             
             statement.executeUpdate();
+
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    setId(generatedKeys.getString(1)); // Assigner l'ID généré
+                } else {
+                    throw new SQLException("Échec de l'insertion, aucun ID généré.");
+                }
+            }
             
             ChangementCoursCrypto changement = new ChangementCoursCrypto(this);
             changement.insererHistorique(connection);
+        } catch(Exception err){
+            connection.rollback();
+            throw err ;
+        } finally{
+            connection.setAutoCommit(true);
         }
     }
 
+    public void update(Connection connection) throws Exception {
+        String query = "UPDATE cryptomonnaie SET valeur = ? WHERE id = ?";
+    
+        connection.setAutoCommit(false);
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            
+            // Définir les paramètres pour la mise à jour
+            statement.setDouble(1, getValeur());
+            statement.setString(2, getId());
+    
+            int affectedRows = statement.executeUpdate();
+    
+            if (affectedRows == 0) {
+                throw new SQLException("Échec de la mise à jour, aucune ligne affectée.");
+            }
+    
+            // Insérer un changement de cours historique
+            ChangementCoursCrypto changement = new ChangementCoursCrypto(this);
+            changement.insererHistorique(connection);
+    
+        } catch (Exception err) {
+            connection.rollback(); // Annuler les changements en cas d'erreur
+            throw err;
+        } finally {
+            connection.setAutoCommit(true); // Restaurer le mode auto-commit
+        }
+    }
+    
 
     @Override
     public String toString() {
         return "Cryptomonnaie{" +
                 "id=" + id +
                 ", nom='" + nom + '\'' +
-                ", quantite=" + quantite +
                 ", valeur=" + valeur +
                 '}';
     }

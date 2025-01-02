@@ -1,8 +1,13 @@
 package com.crypto.model.crypto;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.crypto.exception.model.ValeurInvalideException;
 
@@ -11,7 +16,7 @@ public class ChangementCoursCrypto {
     String id ; 
     Cryptomonnaie cryptomonnaie ;
     double valeur ; 
-    Date date ; 
+    Timestamp date ; 
 
     // Getter et setter
     public String getId() {
@@ -51,38 +56,44 @@ public class ChangementCoursCrypto {
         }
     }
 
-    public Date getDate() {
+    public Timestamp getDate() {
         return this.date;
     }
 
-    public void setDate(Date date) {
-        if(date==null) {
-            this.date = new Date(System.currentTimeMillis());
-        }
-        else this.date = date;
+    public void setDate() {
+       
+        setDate(Timestamp.valueOf(LocalDateTime.now()));
+        
     }
 
-    public void setDate(String date) throws ValeurInvalideException{
-        try {
-            Date d = Date.valueOf(date);
-            setDate(d);
-        } catch (Exception e) {
-            setDate(new Date(System.currentTimeMillis()));
+    public void setDate(Timestamp date) {
+        if (date == null) {
+            this.date = Timestamp.valueOf(LocalDateTime.now());
+        } else {
+            this.date = date;
         }
-        
+    }
+
+    public void setDate(String date) throws ValeurInvalideException {
+        try {
+            Timestamp timestamp = Timestamp.valueOf(LocalDateTime.parse(date, DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            setDate(timestamp);
+        } catch (Exception e) {
+            setDate(Timestamp.valueOf(LocalDateTime.now()));
+        }
     }
 
     // Constructeur
     public ChangementCoursCrypto() {
     }
 
-    public ChangementCoursCrypto(Cryptomonnaie cryptomonnaie, double valeur, Date date) {
+    public ChangementCoursCrypto(Cryptomonnaie cryptomonnaie, double valeur, Timestamp date) {
         setCryptomonnaie(cryptomonnaie);
         setValeur(valeur);
         setDate(date);
     }
 
-    public ChangementCoursCrypto(String id, Cryptomonnaie cryptomonnaie, double valeur, Date date) {
+    public ChangementCoursCrypto(String id, Cryptomonnaie cryptomonnaie, double valeur, Timestamp date) {
         setId(id);
         setCryptomonnaie(cryptomonnaie);
         setValeur(valeur);
@@ -98,7 +109,7 @@ public class ChangementCoursCrypto {
     public ChangementCoursCrypto(Cryptomonnaie cryptomonnaie) throws ValeurInvalideException{
         setCryptomonnaie(cryptomonnaie);
         setValeur(cryptomonnaie.getValeur());
-        setDate("");
+        setDate();
     }
 
     public void insererHistorique(Connection connection) throws Exception {
@@ -107,11 +118,100 @@ public class ChangementCoursCrypto {
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setDouble(1, getValeur());  // Action spécifique, ici "Insertion"
-            statement.setDate(2, getDate());  // Action spécifique, ici "Insertion"
+            statement.setTimestamp(2, getDate());  // Action spécifique, ici "Insertion"
             statement.setString(3, getCryptomonnaie().getId());  // Action spécifique, ici "Insertion"
             // Exécuter la requête pour insérer l'historique
             statement.executeUpdate();
         }
+    }
+
+    public static ChangementCoursCrypto[] getByCriteria(Connection connection, int secondes) throws Exception {
+        List<ChangementCoursCrypto> historiques = new ArrayList<>();
+
+        // Construction de la requête avec des conditions dynamiques
+        StringBuilder queryBuilder = new StringBuilder("SELECT * FROM historiqueCrypto WHERE 1=1");
+
+        if(secondes==0) {
+            Cryptomonnaie[] cryptomonnaies = Cryptomonnaie.getAll(connection);
+            for (Cryptomonnaie cryptomonnaie : cryptomonnaies) {
+               historiques.add(new ChangementCoursCrypto(cryptomonnaie)); 
+            }
+            return historiques.toArray(new ChangementCoursCrypto[0]);
+        }
+        // Ajouter une condition pour les derniers "seconds" si non nul
+        if (secondes > 0) {
+            queryBuilder.append(" AND dateChangement BETWEEN NOW() - INTERVAL '").append(secondes).append(" seconds'").append("AND NOW() ");
+        } 
+
+        String query = queryBuilder.toString();
+        System.out.println("Requete est "+query);
+
+        // Préparer la requête et définir les paramètres dynamiquement
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    ChangementCoursCrypto historique = new ChangementCoursCrypto();
+                    historique.setId(resultSet.getString("id"));
+                    historique.setValeur(resultSet.getDouble("cours"));
+                    historique.setDate(resultSet.getTimestamp("dateChangement"));
+                    historique.setCryptomonnaie(resultSet.getString("idCryptomonnaie"));
+                    historiques.add(historique);
+                }
+            }
+        }
+
+        return historiques.toArray(new ChangementCoursCrypto[0]); 
+    }
+
+    public static ChangementCoursCrypto[] getById(Connection connection, Cryptomonnaie crypto, int secondes) throws Exception {
+        List<ChangementCoursCrypto> historiques = new ArrayList<>();
+
+        // Construction de la requête avec des conditions dynamiques
+        StringBuilder queryBuilder = new StringBuilder("SELECT * FROM historiqueCrypto WHERE 1=1");
+
+        // Ajouter une condition pour les derniers "seconds" si non nul
+        if (secondes > 0) {
+            queryBuilder.append(" AND dateChangement >= NOW() - INTERVAL '").append(secondes).append(" seconds'");
+        } 
+        if (crypto!=null) {
+            queryBuilder.append(" AND idcryptomonnaie = ?");
+        } 
+
+        String query = queryBuilder.toString();
+
+        // Préparer la requête et définir les paramètres dynamiquement
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            int parameterIndex = 1;
+
+            if (crypto != null) {
+                statement.setString(parameterIndex++, crypto.getId());
+            }
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    ChangementCoursCrypto historique = new ChangementCoursCrypto();
+                    historique.setId(resultSet.getString("id"));
+                    historique.setValeur(resultSet.getDouble("cours"));
+                    historique.setDate(resultSet.getTimestamp("dateChangement"));
+                    historique.setCryptomonnaie(resultSet.getString("idCryptomonnaie"));
+                    historiques.add(historique);
+                }
+            }
+        }
+
+        return historiques.toArray(new ChangementCoursCrypto[0]); 
+    }
+
+    
+    @Override
+    public String toString() {
+        return "Changement crypto {" +
+                "id=" + id +
+                ", crypto='" + getCryptomonnaie() + '\'' +
+                ", valeur=" + getValeur() +
+                ", date =" + getDate() +
+                '}';
     }
     
 }
