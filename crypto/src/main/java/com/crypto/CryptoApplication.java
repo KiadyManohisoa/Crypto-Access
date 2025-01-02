@@ -2,12 +2,14 @@ package com.crypto;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.crypto.model.crypto.Cryptomonnaie;
 import com.crypto.service.connection.UtilDB;
 
 
 @SpringBootApplication
+@EnableScheduling
 public class CryptoApplication {
 
     public static void main(String[] args) {

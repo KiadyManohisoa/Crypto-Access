@@ -38,31 +38,14 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>
-                            <td>Protoshare</td>
-                            <td>3000</td>
-                            <td><a th:href="@{/coursDetail}">Visualiser l'évolution ?</a></td>
+
+                          <tr th:each="crypto : ${cryptomonnaies}">
+                            <td th:text="${crypto.cryptomonnaie.nom}">Nom de la crypto</td>
+                            <td th:text="${crypto.valeur}">Valeur de la crypto</td>
+                            <td><a th:href="@{/coursDetail(id=${crypto.cryptomonnaie.id})}">Visualiser l'évolution ?</a></td>
                           </tr>
-                          <tr>
-                            <td>Bitcoin</td>
-                            <td>3000</td>
-                            <td><a th:href="@{/coursDetail}">Visualiser l'évolution ?</a></td>
-                          </tr>
-                          <tr>
-                            <td>Dogecoin</td>
-                            <td>3000</td>
-                            <td><a th:href="@{/coursDetail}">Visualiser l'évolution ?</a></td>
-                          </tr>
-                          <tr>
-                            <td>Ripple</td>
-                            <td>3000</td>
-                            <td><a th:href="@{/coursDetail}">Visualiser l'évolution ?</a></td>
-                          </tr>
-                          <tr>
-                            <td>NxT Coin</td>
-                            <td>3000</td>
-                            <td><a th:href="@{/coursDetail}">Visualiser l'évolution ?</a></td>
-                            </tr>
+                         
+                          
                         </tbody>
                       </table>
                       <!-- End Table with hoverable rows -->
