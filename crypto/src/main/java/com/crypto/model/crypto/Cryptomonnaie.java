@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.crypto.exception.model.ValeurInvalideException;
+import com.crypto.model.crypto.donnees.Donnees;
 
 public class Cryptomonnaie {
 
@@ -166,7 +167,63 @@ public class Cryptomonnaie {
             connection.setAutoCommit(true); // Restaurer le mode auto-commit
         }
     }
+
+    public static void updateBatch(Connection connection, Cryptomonnaie[] cryptomonnaies) throws Exception {
+        String query = "UPDATE cryptomonnaie SET valeur = ? WHERE id = ?";
+        
+        connection.setAutoCommit(false);
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
     
+            for (Cryptomonnaie crypto : cryptomonnaies) {
+                statement.setDouble(1, crypto.getValeur());
+                statement.setString(2, crypto.getId());
+                statement.addBatch(); 
+            }
+    
+            int[] affectedRows = statement.executeBatch();
+    
+            for (int count : affectedRows) {
+                if (count == 0) {
+                    throw new SQLException("Échec de la mise à jour pour au moins une cryptomonnaie.");
+                }
+            }
+    
+            for (Cryptomonnaie crypto : cryptomonnaies) {
+                ChangementCoursCrypto changement = new ChangementCoursCrypto(crypto);
+                changement.insererHistorique(connection);
+            }
+            connection.commit(); 
+        } catch (Exception err) {
+            connection.rollback(); 
+            throw err;
+        } finally {
+            // connection.setAutoCommit(true); 
+        }
+    }
+    
+    public void nouveauCours(Connection connection) throws Exception {
+
+        Cryptomonnaie[] cryptomonnaies = getAll(connection);
+        connection.setAutoCommit(false);
+        try {
+            for (Cryptomonnaie cryptomonnaie : cryptomonnaies) {
+                Donnees donnees = new Donnees(cryptomonnaie.getValeur());
+                cryptomonnaie.setValeur(donnees.genererValeurAleatoire());
+                System.out.println("Données est "+donnees.toString());
+            }
+    
+            updateBatch(connection, cryptomonnaies);
+            connection.commit();
+            System.out.println("Insérée");
+        } catch (Exception e) {
+            connection.rollback();
+            e.printStackTrace();
+            throw e ;
+        } finally{
+            connection.setAutoCommit(true);
+        }
+
+    }
 
     @Override
     public String toString() {

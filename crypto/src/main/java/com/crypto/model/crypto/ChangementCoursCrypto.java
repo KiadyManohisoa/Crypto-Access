@@ -87,6 +87,11 @@ public class ChangementCoursCrypto {
     public ChangementCoursCrypto() {
     }
 
+    // public ChangementCoursCrypto(Donnees donnees) {
+    //     setValeur(donnees.getValeur());
+    //     setDate();
+    // }
+
     public ChangementCoursCrypto(Cryptomonnaie cryptomonnaie, double valeur, Timestamp date) {
         setCryptomonnaie(cryptomonnaie);
         setValeur(valeur);
@@ -202,6 +207,8 @@ public class ChangementCoursCrypto {
 
         return historiques.toArray(new ChangementCoursCrypto[0]); 
     }
+
+    
 
     
     @Override
