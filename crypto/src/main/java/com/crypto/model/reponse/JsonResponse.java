@@ -37,7 +37,7 @@ public class JsonResponse<T> {
     }
 
     public void setError(String error) {
-        this.error = error;
+        if(error==null || error.isEmpty()) this.error = null;
     }
 
     public T getData() {

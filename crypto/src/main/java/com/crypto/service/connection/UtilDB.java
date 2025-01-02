@@ -1,35 +1,29 @@
 package com.crypto.service.connection;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
+
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import lombok.Getter;
 import lombok.Setter;
 
+@Component
 @Getter
 @Setter
 public class UtilDB {
     
-    String base ; 
-    String user ;
-    String pwd ;
-    Connection connection ;
-    
-    public UtilDB(String base, String user, String pwd) throws Exception{
-         try {
-            String jdbcUrl = "jdbc:postgresql://localhost:5432/";  // Modifiez en fonction de votre configuration
-            Class.forName("org.postgresql.Driver");
-            connection = DriverManager.getConnection(jdbcUrl+base, user, pwd);
-            
-        }
-        catch(ClassNotFoundException e){
-            System.err.println("Pilote postgres JDBC introuvable !");
-            throw e;
-        } 
-        catch (SQLException e) {
-            System.err.println("Erreur lors de la connexion à la base de données : " + e.getMessage());
-            throw e;
-        }
+   @Autowired
+    private final DataSource dataSource;
+
+    public UtilDB(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
     }
 }

@@ -1,11 +1,21 @@
 package com.crypto.controller.navigation;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import com.crypto.model.utilisateur.Genre;
+import com.crypto.model.utilisateur.Utilisateur;
+import com.crypto.service.AccessAPI;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class NavigationController {
        
+    @Autowired
+    private AccessAPI accessAPI ;
     // Accueil Map
     @GetMapping("/accueil")
     public String accueil() {
@@ -38,19 +48,35 @@ public class NavigationController {
     }
 
     @GetMapping("/deconnection")
-    public String deconnection() {
+    public String deconnection(HttpSession session, Model model) {
+        session.removeAttribute("utilisateur");
+        Utilisateur utilisateur = new Utilisateur();
+        utilisateur.setGenre(new Genre());
+        model.addAttribute("utilisateur", utilisateur);
         return "pages/utilisateur/connection"; // Utilise home.html avec le layout
     }
 
     // Utilisateur Map 
 
     @GetMapping("/connection")
-    public String connection() {
+    public String connection(Model model ) {
+
+        Utilisateur utilisateur = new Utilisateur() ;
+        utilisateur.setGenre(new Genre());
+        model.addAttribute("utilisateur", utilisateur); 
         return "pages/utilisateur/connection"; // Utilise home.html avec le layout
     }
 
     @GetMapping("/inscription")
-    public String inscription() {
+    public String inscription(Model model) {
+        try{
+            model.addAttribute("genres", accessAPI.listeGenres());
+        } catch(Exception err) {
+            model.addAttribute("message", err.getMessage());
+        }
+        Utilisateur utilisateur = new Utilisateur() ;
+        utilisateur.setGenre(new Genre());
+        model.addAttribute("utilisateur", utilisateur); 
         return "pages/utilisateur/inscription"; // Utilise home.html avec le layout
     }
 }

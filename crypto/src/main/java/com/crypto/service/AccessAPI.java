@@ -1,58 +1,95 @@
 package com.crypto.service;
 
-import java.net.ConnectException;
 import java.sql.Connection;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
-import com.crypto.exception.authentification.InscriptionEchoueException;
+import com.crypto.config.AccessAPIConfig;
+import com.crypto.model.reponse.JsonResponse;
+import com.crypto.model.utilisateur.Genre;
 import com.crypto.model.utilisateur.Utilisateur;
+import com.crypto.service.util.Wrapper;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Service
+@Getter
+@Setter
 public class AccessAPI {
     
-    public void inscription(Connection connection, Utilisateur utilisateur) throws InscriptionEchoueException {
-        
-//         try (CloseableHttpClient httpClient = CloseableHttpClients.createDefault()) {
-//             // Créer une requête POST
-//             HttpPost post = new HttpPost(AccessAPIConfig.ACCESS_INSCRIPTION);
+    @Autowired
+    private RestTemplate restTemplate; // Injection du Bean RestTemplate
 
-//             // Configurer les headers
-//             post.setHeader("Content-Type", "application/json");
-//             post.setHeader("Accept", "application/json");
+    public String callSymfonyService() {
 
-//             // Convertir l'objet Java en JSON
-//             ObjectMapper mapper = new ObjectMapper();
-//             String json = mapper.writeValueAsString(utilisateur);
+       String url = AccessAPIConfig.BASE_URL+"/api/utilisateurs" ;
+       try {
 
-//             // Ajouter le JSON au corps de la requête
-//             post.setEntity(new StringEntity(json));
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+            return response.getBody();
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
 
-//             // Envoyer la requête et lire la réponse
-//             try (CloseableHttpResponse response = httpClient.execute(post)) {
-//                 int statusCode = response.getCode();
-                
-//                 // Vérifier si la réponse est réussie (status 200)
-//                 if (statusCode == 200) {
-//                     String responseBody = new String(response.getEntity().getContent().readAllBytes());
+            return "Erreur: " + e.getStatusCode() + " - " + e.getResponseBodyAsString();
+        }
 
-//                     // Convertir la réponse JSON en objet JsonResponse
-//                     JsonResponse<Utilisateur> jsonResponse = mapper.readValue(responseBody,
-//                         new TypeReference<JsonResponse<Utilisateur>>() {});
-
-//                     // Afficher ou traiter la réponse
-//                     System.out.println("Réponse réussie : " + jsonResponse);
-//                 } else {
-//                     // Gérer une réponse d'erreur (par exemple, code 400 ou 500)
-//                     throw new InscriptionEchoueException("Échec de l'inscription, code HTTP : " + statusCode);
-//                 }
-//             } catch (IOException e) {
-//                 // Gestion de l'erreur pour le corps de la réponse
-//                 throw new InscriptionEchoueException("Erreur lors de la lecture de la réponse du serveur", e);
-//             }
-//         } catch (IOException e) {
-//             // Gestion de l'erreur pour la requête HTTP
-//             throw new InscriptionEchoueException("Erreur lors de la requête HTTP", e);
-//         }
     }
 
-    public void connection(Connection connction, Utilisateur utilisateur) throws ConnectException {}
+    public Genre[] listeGenres() throws Exception{
+
+        String url = AccessAPIConfig.BASE_URL+"/genres" ;
+        try {
+ 
+            ResponseEntity<Genre[]> response = restTemplate.getForEntity(url, Genre[].class);
+            return response.getBody();
+            
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+ 
+            throw e ;
+        }
+ 
+     }
+
+
+    public JsonResponse connection(Connection connection, Utilisateur utilisateur) throws Exception {
+        
+        String url = AccessAPIConfig.BASE_URL+"api/auth/login"; 
+        return appelerSymfony(url, utilisateur);
+       
+    }
+
+    public JsonResponse inscription(Connection connction, Utilisateur utilisateur) throws Exception {
+        String url = AccessAPIConfig.BASE_URL+"api/utilisateur"; 
+        return appelerSymfony(url, utilisateur);
+    }
+
+    private JsonResponse appelerSymfony(String url, Utilisateur utilisateur) throws Exception{
+
+        try {
+            String jsonBody = (new Wrapper()).enJSON(utilisateur);
+        
+            // Headers pour la requête
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+    
+            // Créer une entité avec le corps et les headers
+            HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
+    
+            // Effectuer une requête POST
+            ResponseEntity<JsonResponse> responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity, JsonResponse.class);
+            return responseEntity.getBody();
+
+        } catch (Exception e) {
+            throw e ;
+        }
+    }
 }

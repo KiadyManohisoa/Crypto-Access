@@ -7,7 +7,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.crypto.exception.model.ValeurInvalideException;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class Utilisateur {
 
     String id ;
@@ -16,7 +22,9 @@ public class Utilisateur {
     String prenom;
     Date dateNaissance;
     String mail;
-
+    // Agument pour le founisseur d'identité
+    String mdp ;
+    Genre genre ; 
     
     // Getters et Setters
     public String getId() {
@@ -50,7 +58,9 @@ public class Utilisateur {
     public void setPrenom(String prenom) {
         this.prenom = prenom;
     }
-
+    
+    @JsonProperty("date_naissance")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     public Date getDateNaissance() {
         return dateNaissance;
     }
@@ -75,6 +85,37 @@ public class Utilisateur {
     public void setMail(String mail) {
         this.mail = mail;
     }
+
+    public String getMdp() {
+        return mdp;
+    }
+
+    public String getMotdepasse() {
+        return mdp;
+    }
+
+    public void setMdp(String mdp) {
+        this.mdp = mdp;
+    }
+
+    @JsonProperty("genre")
+    public String getGenreID() {
+        if(genre!=null) return genre.getId();
+        else return "";
+    }
+    @JsonIgnore
+    public Genre getGenre() {
+        return genre;
+    }
+
+    public void setGenre(Genre genre) {
+        this.genre = genre;
+    }
+
+    public void setGenre(String idGenre) {
+       setGenre(new Genre(idGenre));
+    }
+
 
     // Constructeur utilisant les setters
     public Utilisateur(String id, String token, String nom, String prenom, Date dateNaissance, String mail) {
@@ -158,6 +199,22 @@ public class Utilisateur {
                 }
             }
         }
-                return null;
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        // Formater la date de naissance si elle n'est pas nulle
+        String formattedDate = (dateNaissance != null) ? dateNaissance.toString() : "N/A"; // Ou vous pouvez utiliser SimpleDateFormat pour formater spécifiquement
+
+        return "Utilisateur{" +
+                "id='" + id + '\'' +
+                ", token='" + token + '\'' +
+                ", nom='" + nom + '\'' +
+                ", prenom='" + prenom + '\'' +
+                ", dateNaissance=" + formattedDate +
+                ", mail='" + mail + '\'' +
+                ", mdp='" + (mdp != null ? "********" : "null") + '\'' +  // Ne jamais afficher le mot de passe en clair
+                '}';
     }
 }

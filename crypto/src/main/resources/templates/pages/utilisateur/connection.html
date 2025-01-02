@@ -32,20 +32,20 @@
                     <p class="text-center small">Entrez votre mail et mot de passe</p>
                   </div>
 
-                  <form class="row g-3 needs-validation" novalidate>
+                  <form class="row g-3 needs-validation" th:action="@{/crypto/connection}" th:object="${utilisateur}" method="post">
 
                     <div class="col-12">
                       <label for="yourUsername" class="form-label">Adresse mail</label>
                       <div class="input-group has-validation">
                         <span class="input-group-text" id="inputGroupPrepend">@</span>
-                        <input name="mail" type="email" class="form-control" id="yourUsername" required>
+                        <input type="email" class="form-control" id="yourUsername" th:field="*{mail}" required>
                         <div class="invalid-feedback">Please enter your mail.</div>
                       </div>
                     </div>
 
                     <div class="col-12">
                       <label for="yourPassword" class="form-label">Mot de passe</label>
-                      <input name="mdp" type="password" class="form-control" id="yourPassword" required>
+                      <input th:field="*{mdp}" type="password" class="form-control" id="yourPassword" required>
                       <div class="invalid-feedback">Please enter your password!</div>
                     </div>
 

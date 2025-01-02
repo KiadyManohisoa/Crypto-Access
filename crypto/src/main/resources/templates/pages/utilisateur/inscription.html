@@ -31,37 +31,44 @@
                     <p class="text-center small">Entrez ci-dessous vos informations</p>
                   </div>
 
-                  <form class="row g-3 needs-validation" novalidate>
+                  <form class="row g-3 needs-validation" th:action="@{/crypto/inscription}" th:object="${utilisateur}" method="post">
                     <div class="col-12">
                       <label for="yourName" class="form-label">Adresse mail</label>
-                      <input name="adressemail" type="email" class="form-control" id="yourMail" required>
+                      <input name="adressemail" type="email" class="form-control" id="yourMail" th:field="*{mail}" required>
                       <div class="invalid-feedback">Entrez votre mail s'il vous plaît!</div>
                     </div>
                     
                     <div class="col-12">
                         <label for="yourPassword" class="form-label">Mot de passe</label>
-                        <input type="password" name="password" class="form-control" id="yourPassword" required>
+                        <input type="password" name="password" class="form-control" id="yourPassword" th:field="*{mdp}" required>
                         <div class="invalid-feedback">Entrez votre mot de passe s'il vous plaît!</div>
                     </div>
 
                     <div class="col-12">
                         <label for="yourFirstName" class="form-label">Nom</label>
-                        <input name="nom" type="text" class="form-control" id="yourFirstName" required>
+                        <input name="nom" type="text" class="form-control" id="yourFirstName" th:field="*{nom}" required>
                         <div class="invalid-feedback">Entrez votre nom s'il vous plaît!</div>
                     </div>
 
                     <div class="col-12">
                         <label for="yourLastName" class="form-label">Prénom</label>
-                        <input name="prenom" type="text" class="form-control" id="yourLastName" required>
+                        <input name="prenom" type="text" class="form-control" id="yourLastName" th:field="*{prenom}" required>
                         <div class="invalid-feedback">Entrez votre prénom s'il vous plaît!</div>
                     </div>
 
                     <div class="col-12">
                         <label for="yourBirthDate" class="form-label">Date de naissance</label>
-                        <input name="dtn" type="date" class="form-control" id="yourBirthDate" required>
+                        <input name="dtn" type="date" class="form-control" id="yourBirthDate" th:field="*{dateNaissance}" required>
                         <div class="invalid-feedback">Entrez votre date de naissance s'il vous plaît!</div>
                     </div>
 
+                    <div class="col-12">
+                      <label for="yourBirthDate" class="form-label">Genre</label>
+                      <select th:field="*{genre.id}" id="genre" name="genre" class="form-select">                
+                        <!-- Boucle sur la liste des genres pour créer les options -->
+                        <option th:each="genre : ${genres}" th:value="${genre.id}" th:text="${genre.libelle}" th:selected="${genre.id == utilisateur.genre.id}">Genre</option>
+                    </select>
+                    </div>
 
                     <div class="col-12">
                       <button class="btn btn-primary w-100" type="submit">S'inscrire</button>
