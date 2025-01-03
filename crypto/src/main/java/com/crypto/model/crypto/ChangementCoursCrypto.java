@@ -134,7 +134,7 @@ public class ChangementCoursCrypto {
         List<ChangementCoursCrypto> historiques = new ArrayList<>();
 
         // Construction de la requête avec des conditions dynamiques
-        StringBuilder queryBuilder = new StringBuilder("SELECT * FROM historiqueCrypto WHERE 1=1");
+        StringBuilder queryBuilder = new StringBuilder("SELECT * FROM v_historique_crypto WHERE 1=1");
 
         if(secondes==0) {
             Cryptomonnaie[] cryptomonnaies = Cryptomonnaie.getAll(connection);
@@ -160,7 +160,9 @@ public class ChangementCoursCrypto {
                     historique.setId(resultSet.getString("id"));
                     historique.setValeur(resultSet.getDouble("cours"));
                     historique.setDate(resultSet.getTimestamp("dateChangement"));
-                    historique.setCryptomonnaie(resultSet.getString("idCryptomonnaie"));
+                    Cryptomonnaie cryptomonnaie = new Cryptomonnaie(resultSet.getString("idcryptomonnaie"), resultSet.getString("nom"), resultSet.getDouble("valeur"));
+                    historique.setCryptomonnaie(cryptomonnaie);
+                    
                     historiques.add(historique);
                 }
             }
