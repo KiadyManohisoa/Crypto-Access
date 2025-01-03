@@ -209,12 +209,12 @@ public class Cryptomonnaie {
             for (Cryptomonnaie cryptomonnaie : cryptomonnaies) {
                 Donnees donnees = new Donnees(cryptomonnaie.getValeur());
                 cryptomonnaie.setValeur(donnees.genererValeurAleatoire());
-                System.out.println("Données est "+donnees.toString());
+                // System.out.println("Données est "+donnees.toString());
             }
     
             updateBatch(connection, cryptomonnaies);
             connection.commit();
-            System.out.println("Insérée");
+            // System.out.println("Insérée");
         } catch (Exception e) {
             connection.rollback();
             e.printStackTrace();

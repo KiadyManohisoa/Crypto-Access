@@ -1,8 +1,11 @@
 package com.crypto.service;
 
 import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
@@ -67,15 +70,28 @@ public class AccessAPI {
        
     }
 
+    public JsonResponse verification(Connection connection, String id, String pin) throws Exception {
+        
+        String url = AccessAPIConfig.BASE_URL+"api/auth/check-pin"; 
+
+        Map<String,String> map = new HashMap<>();
+        map.put("id_compte", id);
+        map.put("pin", pin);
+
+        return appelerSymfony(url, map);
+       
+    }
+
     public JsonResponse inscription(Connection connction, Utilisateur utilisateur) throws Exception {
+        
         String url = AccessAPIConfig.BASE_URL+"api/utilisateur"; 
         return appelerSymfony(url, utilisateur);
     }
 
-    private JsonResponse appelerSymfony(String url, Utilisateur utilisateur) throws Exception{
+    private JsonResponse appelerSymfony(String url, Object objet) throws Exception{
 
         try {
-            String jsonBody = (new Wrapper()).enJSON(utilisateur);
+            String jsonBody = (new Wrapper()).enJSON(objet);
         
             // Headers pour la requête
             HttpHeaders headers = new HttpHeaders();
@@ -85,7 +101,7 @@ public class AccessAPI {
             HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
     
             // Effectuer une requête POST
-            ResponseEntity<JsonResponse> responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity, JsonResponse.class);
+            ResponseEntity<JsonResponse<Map<String, String>>> responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity,  new ParameterizedTypeReference<JsonResponse<Map<String, String>>>() {});
             return responseEntity.getBody();
 
         } catch (Exception e) {

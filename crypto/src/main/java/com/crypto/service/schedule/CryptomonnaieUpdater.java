@@ -24,6 +24,6 @@ public class CryptomonnaieUpdater {
         } catch(Exception err) {
             throw err ;
         }
-        System.out.println("Cours des cryptomonnaies mis à jour.");
+        // System.out.println("Cours des cryptomonnaies mis à jour.");
     }
 }

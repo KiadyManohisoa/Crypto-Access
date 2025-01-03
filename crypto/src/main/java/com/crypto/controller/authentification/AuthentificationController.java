@@ -1,11 +1,14 @@
 package com.crypto.controller.authentification;
 
 import java.sql.Connection;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.crypto.model.reponse.JsonResponse;
@@ -26,21 +29,57 @@ public class AuthentificationController {
 
 
     @PostMapping("/crypto/connection")
-    public String connection(HttpSession session, @ModelAttribute Utilisateur utilisateur, RedirectAttributes redirectAttributes) {
+    public String connection(@ModelAttribute Utilisateur utilisateur, RedirectAttributes redirectAttributes, Model model) {
         
         String cheminRedirection = "redirect:/connection";
         System.out.println("Dans connection");
         
         try(Connection connection = utilDB.getConnection()) {
-            JsonResponse jsonResponse = accessAPI.connection(connection, utilisateur) ;
+            JsonResponse<Map<String,String>> jsonResponse = (JsonResponse<Map<String,String>>)accessAPI.connection(connection, utilisateur) ;
 
             if(jsonResponse.getError()==null && jsonResponse.getCode()==200) {
                 utilisateur = Utilisateur.getByMail(connection, utilisateur.getMail());
-                session.setAttribute("utilisateur", utilisateur);
-                cheminRedirection = "redirect:/accueil";
-                System.out.println("Vérification réussie");
+                model.addAttribute("id", jsonResponse.getData().get("id"));
+                model.addAttribute("mail", utilisateur.getMail());
+                model.addAttribute("message", jsonResponse.getData().get("message"));
+                cheminRedirection = "pages/utilisateur/confirmationPIN";
 
-            } else redirectAttributes.addFlashAttribute("message", jsonResponse.getError());
+                System.out.println("Authentification en cours "+jsonResponse.getData().get("id"));
+
+            } 
+            else redirectAttributes.addFlashAttribute("message", jsonResponse.getData().get("message"));
+    
+            System.out.println("Message : "+jsonResponse.getData().get("message")+" Erreur : "+jsonResponse.getError());
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("message", e.getMessage());
+            
+        }
+        System.out.println("Redirection ...");
+        return cheminRedirection;
+    }
+
+    @PostMapping("/crypto/PIN")
+    public String PIN(HttpSession session, @RequestParam("mail") String mail, @RequestParam("id") String id, @RequestParam("n1") String n1, @RequestParam("n2") String n2, @RequestParam("n3") String n3, @RequestParam("n4") String n4, RedirectAttributes redirectAttributes, Model model) {        
+        
+        String cheminRedirection = "redirect:/connection";
+        StringBuilder pin = new StringBuilder();
+        pin.append(n1).append(n2).append(n3).append(n4); 
+        
+        try(Connection connection = utilDB.getConnection()) {
+            JsonResponse<Map<String,String>> jsonResponse = (JsonResponse<Map<String,String>>)accessAPI.verification(connection, id, pin.toString()) ;
+
+            if(jsonResponse.getError()==null && jsonResponse.getCode()==200) {
+
+                Utilisateur utilisateur = Utilisateur.getByMail(connection, mail);
+                session.setAttribute("utilisateur", utilisateur);
+                model.addAttribute("id", jsonResponse.getData().get("id"));
+                System.out.println("Vérification réussie "+jsonResponse.getData().get("id"));
+                cheminRedirection = "redirect:/accueil";
+
+
+            } 
+            redirectAttributes.addFlashAttribute("message", jsonResponse.getData().get("message"));
     
             
         } catch (Exception e) {
@@ -51,7 +90,6 @@ public class AuthentificationController {
         System.out.println("Redirection ...");
         return cheminRedirection;
     }
-
 
     @PostMapping("/crypto/inscription")
     public String inscription(HttpSession session, @ModelAttribute Utilisateur utilisateur, RedirectAttributes redirectAttributes) {

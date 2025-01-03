@@ -44,6 +44,14 @@
 
                         let prices = [[${prix}]]; // Thymeleaf insère ici une liste JSON
                         let times = [[${temps}]];  
+                        let timesInLocalTimezone = times.map(ts => {
+                        let date = new Date(ts); // UTC par défaut
+                            return new Intl.DateTimeFormat('fr-FR', {
+                                timeZone: 'Europe/Paris',
+                                dateStyle: 'medium',
+                                timeStyle: 'medium'
+                            }).format(date);
+                        });
                         
                         // // Générer les 10 dernières valeurs de prix et leurs dates alignées tous les 10 secondes
                         // for (let i = 0; i < prices.length; i++) {
@@ -78,7 +86,7 @@
                           xaxis: {
                             type: 'datetime',
                             labels: {
-                              format: 'dd-mm-yyyy HH:mm:ss' // Format de l'heure
+                              format: 'dd-MM-yyyy HH:mm:ss' // Format de l'heure
                             }
                           },
                           yaxis: {

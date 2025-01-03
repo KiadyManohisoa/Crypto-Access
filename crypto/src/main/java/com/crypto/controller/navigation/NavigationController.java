@@ -1,6 +1,10 @@
 package com.crypto.controller.navigation;
 
 import java.sql.Connection;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +62,17 @@ public class NavigationController {
 
             for (ChangementCoursCrypto changementCoursCrypto : changementCoursCryptos) {
                 prix.add(changementCoursCrypto.getValeur());
-                temps.add(changementCoursCrypto.getDate().getTime());
+                 Instant instant = changementCoursCrypto.getDate().toInstant();
+
+                // Appliquer un fuseau horaire spécifique (par exemple, Europe/Paris)
+                ZoneId zoneId = ZoneId.of("Europe/Paris");
+                ZonedDateTime zonedDateTime = instant.atZone(zoneId);
+
+                // Convertir en millisecondes pour le fuseau horaire ajusté
+                long adjustedTimestamp = zonedDateTime.toInstant().toEpochMilli();
+
+                temps.add(adjustedTimestamp);
+                // temps.add(changementCoursCrypto.getDate().getTime());
             }
             
             model.addAttribute("prix", prix);
@@ -106,6 +120,13 @@ public class NavigationController {
         model.addAttribute("utilisateur", utilisateur); 
         return "pages/utilisateur/connection"; // Utilise home.html avec le layout
     }
+
+    @GetMapping("/confirmationPIN")
+    public String confirmationPIN() {
+
+        return "pages/utilisateur/confirmationPIN"; 
+    }
+
 
     @GetMapping("/inscription")
     public String inscription(Model model) {
