@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.crypto.exception.model.ValeurInvalideException;
+import com.crypto.service.util.Util;
 
 public class ChangementCoursCrypto {
     
@@ -61,8 +62,7 @@ public class ChangementCoursCrypto {
     }
 
     public void setDate() {
-       
-        setDate(Timestamp.valueOf(LocalDateTime.now()));
+        setDate(Util.getDateHeureMaintenant());
         
     }
 
@@ -84,8 +84,7 @@ public class ChangementCoursCrypto {
     }
 
     // Constructeur
-    public ChangementCoursCrypto() {
-    }
+    public ChangementCoursCrypto() {}
 
     // public ChangementCoursCrypto(Donnees donnees) {
     //     setValeur(donnees.getValeur());

@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,12 +12,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.crypto.config.DonneesConfig;
 import com.crypto.model.crypto.ChangementCoursCrypto;
 import com.crypto.model.crypto.Cryptomonnaie;
+import com.crypto.model.portefeuille.PorteFeuille;
+import com.crypto.model.portefeuille.PorteFeuilleDetails;
 import com.crypto.model.utilisateur.Genre;
 import com.crypto.model.utilisateur.Utilisateur;
+import com.crypto.model.vente.Vente;
 import com.crypto.service.AccessAPI;
 import com.crypto.service.connection.UtilDB;
 
@@ -87,18 +90,52 @@ public class NavigationController {
     }
 
     @GetMapping("/detailVente")
-    public String detailVente() {
+    public String detailVente(@RequestParam("idVente") String idVente, Model model) {
+
+        try {
+            Connection connection = utilDB.getConnection();
+            Vente vente=Vente.getById(connection, idVente);
+            model.addAttribute("vente", vente);
+            System.out.println("Vente effectuée ");
+
+        } catch (Exception err) { 
+
+            model.addAttribute("message", err.getMessage());
+            System.err.println("Erreur lors de la récupération des données : " + err.getMessage());
+            err.printStackTrace();
+        }
         return "pages/accueil/detailVente"; // Utilise home.html avec le layout
     }
 
     @GetMapping("/vente")
-    public String vente() {
+    public String vente(Model model) {
+        // model.addAttribute("ventes", Achat.findAll(utilDB.getConnection()));
+        try {
+            List<Vente> listeVente=Vente.getVenteDisponible(utilDB.getConnection());
+            model.addAttribute("listeVente", listeVente);
+        } catch (Exception err) {
+            System.err.println("Erreur lors de la récupération des données : " + err.getMessage());
+            err.printStackTrace();
+        }
         return "pages/accueil/vente"; // Utilise home.html avec le layout
     }
 
     @GetMapping("/portefeuille")
-    public String portefeuille() {
-        return "pages/accueil/portefeuille"; // Utilise home.html avec le layout
+    public String portefeuille(Model model, HttpSession session) {
+        // String idUtilisateur = ((Utilisateur)session.getAttribute("utilisateur")).getId();
+        String idUtilisateur = "USR000000007";
+        try {
+            PorteFeuille portefeuille = PorteFeuille.getByIdUtilisateur(idUtilisateur, utilDB.getConnection());
+            List<PorteFeuilleDetails> details = PorteFeuilleDetails.getPorteFeuilleDetailsByPorteFeuille(
+                    portefeuille.getId(),
+                    utilDB.getConnection()
+            );
+            model.addAttribute("details", details);
+        } catch (Exception err) {
+            model.addAttribute("message", "Erreur lors de la récupération des données : " + err.getMessage());
+        }
+
+        return "pages/accueil/portefeuille"; // Utilise le fichier portefeuille.html
     }
 
     @GetMapping("/deconnection")

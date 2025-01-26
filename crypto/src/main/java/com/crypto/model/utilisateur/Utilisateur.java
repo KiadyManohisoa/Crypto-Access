@@ -118,6 +118,10 @@ public class Utilisateur {
 
 
     // Constructeur utilisant les setters
+    public Utilisateur(String id) {
+        setId(id);
+    }
+
     public Utilisateur(String id, String token, String nom, String prenom, Date dateNaissance, String mail) {
         setId(id);
         setToken(token);
