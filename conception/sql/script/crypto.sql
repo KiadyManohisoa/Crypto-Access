@@ -12,7 +12,7 @@ CREATE TABLE Utilisateur(
 CREATE TABLE cryptomonnaie(
    id VARCHAR(50)  DEFAULT ('CRYPTO') || LPAD(NEXTVAL('s_crypto')::TEXT, 9, '0'),
    d_valeur NUMERIC(15,2)   default 0,
-   nom VARCHAR(50)  NOT NULL,
+   nom VARCHAR(50)  NOT NULL,g
    PRIMARY KEY(id)
 );
 

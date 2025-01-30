@@ -22,10 +22,10 @@ public class Utilisateur {
     String prenom;
     Date dateNaissance;
     String mail;
-    // Agument pour le founisseur d'identité
     String mdp ;
-    Genre genre ; 
-    
+    Genre genre ; // Agument pour le founisseur d'identité
+    String lienImage ;
+
     // Getters et Setters
     public String getId() {
         return id;
@@ -116,6 +116,14 @@ public class Utilisateur {
        setGenre(new Genre(idGenre));
     }
 
+    public String getLienImage() {
+        return lienImage;
+    }
+
+    public void setLienImage(String lienImage) {
+        this.lienImage = lienImage;
+    }
+
 
     // Constructeur utilisant les setters
     public Utilisateur(String id) {
@@ -143,13 +151,14 @@ public class Utilisateur {
     // Méthode pour insérer un utilisateur dans la base de données
     void insertUtilisateur(Connection connection) throws Exception {
        
-        String query = "INSERT INTO utilisateur (id, nom, prenom, date_naissance, mail) VALUES (DEFAULT, ?, ?, ?, ?)";
+        String query = "INSERT INTO utilisateur (id, nom, prenom, date_naissance, mail, lienImage) VALUES (DEFAULT, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, getNom());
             statement.setString(2, getPrenom());
             statement.setDate(3, getDateNaissance());
             statement.setString(4, getMail());
+            statement.setString(5, getLienImage());
             statement.executeUpdate();
 
             try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
