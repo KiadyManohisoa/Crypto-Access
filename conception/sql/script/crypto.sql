@@ -18,10 +18,10 @@ CREATE TABLE cryptomonnaie(
 
 CREATE TABLE portefeuille(
    id VARCHAR(50)  DEFAULT ('PTF') || LPAD(NEXTVAL('s_portefeuille')::TEXT, 9, '0'),
-   id_idUtilisateur VARCHAR(14)  NOT NULL,
+   idUtilisateur VARCHAR(14)  NOT NULL,
    PRIMARY KEY(id),
-   UNIQUE(id_idUtilisateur),
-   FOREIGN KEY(id_idUtilisateur) REFERENCES Utilisateur(id)
+   UNIQUE(idUtilisateur),
+   FOREIGN KEY(idUtilisateur) REFERENCES Utilisateur(id)
 );
 
 CREATE TABLE portefeuille_detail(
@@ -45,17 +45,6 @@ CREATE TABLE vente(
    FOREIGN KEY(idPortefeuilleDetail) REFERENCES portefeuille_detail(id)
 );
 
-CREATE TABLE achat(
-   id VARCHAR(50)  DEFAULT ('ACT') || LPAD(NEXTVAL('s_achat')::TEXT, 9, '0'),
-   quantiteAchat INTEGER default 0,
-   dateAchat TIMESTAMP default current_date,
-   idAcheteur VARCHAR(14)  NOT NULL,
-   idVente VARCHAR(50)  NOT NULL,
-   PRIMARY KEY(id),
-   FOREIGN KEY(idAcheteur) REFERENCES Utilisateur(id),
-   FOREIGN KEY(idVente) REFERENCES vente(id)
-);
-
 CREATE TABLE historiqueCrypto(
    id VARCHAR(50)  DEFAULT ('HISTO_CRYPTO') || LPAD(NEXTVAL('s_histocrypto')::TEXT, 9, '0'),
    cours NUMERIC(15,2)  ,
@@ -65,16 +54,18 @@ CREATE TABLE historiqueCrypto(
    FOREIGN KEY(idCryptomonnaie) REFERENCES cryptomonnaie(id)
 );
 
-CREATE TABLE historiqueTransaction(
+CREATE TABLE achat(
    id VARCHAR(50)  DEFAULT ('HST_TRS') || LPAD(NEXTVAL('s_historique_transaction')::TEXT, 9, '0'),
    dateTransaction TIMESTAMP default current_timestamp,
    quantite INTEGER default 0,
    d_prixUnitaire VARCHAR(50) ,
    d_commission NUMERIC(5,2)   default 0,
+   idVente VARCHAR(50)  NOT NULL,
    idCryptomonnaie VARCHAR(50)  NOT NULL,
    id_1 VARCHAR(14)  NOT NULL,
    id_2 VARCHAR(14)  NOT NULL,
    PRIMARY KEY(id),
+   FOREIGN KEY(idVente) REFERENCES vente(id),
    FOREIGN KEY(idCryptomonnaie) REFERENCES cryptomonnaie(id),
    FOREIGN KEY(id_1) REFERENCES Utilisateur(id),
    FOREIGN KEY(id_2) REFERENCES Utilisateur(id)

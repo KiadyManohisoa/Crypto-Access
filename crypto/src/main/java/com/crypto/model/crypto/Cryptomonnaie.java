@@ -4,11 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 
 import com.crypto.exception.model.ValeurInvalideException;
 import com.crypto.model.crypto.donnees.Donnees;
-import com.crypto.service.util.Util;
 
 public class Cryptomonnaie {
 
@@ -85,7 +83,7 @@ public class Cryptomonnaie {
                     Cryptomonnaie cryptomonnaie = new Cryptomonnaie();
                     cryptomonnaie.setId(resultSet.getString("id"));
                     cryptomonnaie.setNom(resultSet.getString("nom"));
-                    cryptomonnaie.setValeur(resultSet.getDouble("valeur"));
+                    cryptomonnaie.setValeur(resultSet.getDouble("d_valeur"));
                     cryptomonnaies[index++] = cryptomonnaie;
                 }
 
@@ -104,7 +102,7 @@ public class Cryptomonnaie {
                     Cryptomonnaie cryptomonnaie = new Cryptomonnaie();
                     cryptomonnaie.setId(resultSet.getString("id"));
                     cryptomonnaie.setNom(resultSet.getString("nom"));
-                    cryptomonnaie.setValeur(resultSet.getDouble("valeur"));
+                    cryptomonnaie.setValeur(resultSet.getDouble("d_valeur"));
                     return cryptomonnaie;
                 }
             }
@@ -114,7 +112,7 @@ public class Cryptomonnaie {
     }
 
     public void insert(Connection connection) throws Exception {
-        String query = "INSERT INTO cryptomonnaie (id, nom, valeur) VALUES (DEFAULT, ?, ?)";
+        String query = "INSERT INTO cryptomonnaie (id, nom, d_valeur) VALUES (DEFAULT, ?, ?)";
 
         connection.setAutoCommit(false);
         try (PreparedStatement statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {            
@@ -143,7 +141,7 @@ public class Cryptomonnaie {
     }
 
     public void update(Connection connection) throws Exception {
-        String query = "UPDATE cryptomonnaie SET valeur = ? WHERE id = ?";
+        String query = "UPDATE cryptomonnaie SET d_valeur = ? WHERE id = ?";
     
         connection.setAutoCommit(false);
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -171,7 +169,7 @@ public class Cryptomonnaie {
     }
 
     public static void updateBatch(Connection connection, Cryptomonnaie[] cryptomonnaies) throws Exception {
-        String query = "UPDATE cryptomonnaie SET valeur = ? WHERE id = ?";
+        String query = "UPDATE cryptomonnaie SET d_valeur = ? WHERE id = ?";
         
         connection.setAutoCommit(false);
         try (PreparedStatement statement = connection.prepareStatement(query)) {
