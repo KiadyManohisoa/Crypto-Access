@@ -67,6 +67,7 @@ public class AuthentificationController {
         pin.append(n1).append(n2).append(n3).append(n4); 
         
         try(Connection connection = utilDB.getConnection()) {
+            // JsonResponse<Map<String,String>> jsonResponse = (JsonResponse<Map<String,String>>)accessAPI.verification(connection, id, pin.toString()) ;
             JsonResponse<Map<String,String>> jsonResponse = (JsonResponse<Map<String,String>>)accessAPI.verification(connection, id, pin.toString()) ;
 
             if(jsonResponse.getError()==null && jsonResponse.getCode()==200) {
@@ -107,6 +108,8 @@ public class AuthentificationController {
                 utilisateur.insert(utilDB.getConnection());
                 session.setAttribute("utilisateur", utilisateur);
                 cheminRedirection = "redirect:/accueil";
+                redirectAttributes.addFlashAttribute("message", "Inscription réussie");
+
 
             } else redirectAttributes.addFlashAttribute("message", jsonResponse.getError());
 
@@ -117,7 +120,6 @@ public class AuthentificationController {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
             
         }
-        redirectAttributes.addFlashAttribute("message", "HELLO");
 
         return cheminRedirection;
     }

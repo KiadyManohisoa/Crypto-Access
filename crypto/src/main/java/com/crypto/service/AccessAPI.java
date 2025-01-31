@@ -2,6 +2,7 @@ package com.crypto.service;
 
 import java.sql.Connection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import com.crypto.model.reponse.JsonResponse;
 import com.crypto.model.utilisateur.Genre;
 import com.crypto.model.utilisateur.Utilisateur;
 import com.crypto.service.util.Wrapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -30,6 +32,8 @@ import lombok.Setter;
 @Setter
 public class AccessAPI {
     
+    ObjectMapper objectMapper = new ObjectMapper();
+
     @Autowired
     private RestTemplate restTemplate; // Injection du Bean RestTemplate
 
@@ -85,7 +89,23 @@ public class AccessAPI {
     public JsonResponse inscription(Connection connction, Utilisateur utilisateur) throws Exception {
         
         String url = AccessAPIConfig.BASE_URL+"api/utilisateur"; 
-        return appelerSymfony(url, utilisateur);
+        JsonResponse<Object> rep = appelerSymfony(url, utilisateur);
+        Object data = rep.getData();
+
+        // Vérifie si 'data' est de type Utilisateur
+        if (data instanceof LinkedHashMap) {
+            LinkedHashMap<String, Object> dataMap = (LinkedHashMap<String, Object>) data;
+
+            if (dataMap.containsKey("utilisateur")) {  // Vérifier la clé utilisateur
+                // Convertir en Utilisateur si 'data' est un Utilisateur
+                Utilisateur u = objectMapper.convertValue(dataMap.get("utilisateur"), Utilisateur.class);
+                rep.setData(utilisateur);  // Remplacer 'data' par l'objet Utilisateur
+            } else  if (dataMap.containsKey("message")){
+                rep.setData(objectMapper.convertValue(dataMap.get("message"), String.class));
+            }
+        } 
+
+        return rep ;
     }
 
     private JsonResponse appelerSymfony(String url, Object objet) throws Exception{
@@ -101,7 +121,7 @@ public class AccessAPI {
             HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
     
             // Effectuer une requête POST
-            ResponseEntity<JsonResponse<Map<String, String>>> responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity,  new ParameterizedTypeReference<JsonResponse<Map<String, String>>>() {});
+            ResponseEntity<JsonResponse<Object>> responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity,  new ParameterizedTypeReference<JsonResponse<Object>>() {});
             return responseEntity.getBody();
 
         } catch (Exception e) {
