@@ -31,9 +31,14 @@ public class NavigationController {
        
     @Autowired
     private AccessAPI accessAPI ;
-
     @Autowired
     private UtilDB utilDB ;
+
+    @GetMapping("/analyse")
+    public String analyse() {
+        return "pages/accueil/analyse"; // Utilise home.html avec le layout
+    }
+    
     // Accueil Map
     @GetMapping("/accueil")
     public String accueil() {

@@ -1,18 +1,16 @@
-
 -- Cryptomonnaie 
 
 INSERT INTO cryptomonnaie (id, d_valeur, nom, d_commission) VALUES
-('CRYPTO000000001', 0, 'Bitcoin', 25),
-('CRYPTO000000002', 0, 'Ethereum', 30),
-('CRYPTO000000003', 0, 'Cardano', 15),
-('CRYPTO000000004', 0, 'Solana', 20),
-('CRYPTO000000005', 0, 'Dogecoin', 5),
-('CRYPTO000000006', 0, 'Shiba Inu', 2),
-('CRYPTO000000007', 0, 'Polkadot', 18),
-('CRYPTO000000008', 0, 'Avalanche', 22),
-('CRYPTO000000009', 0, 'XRP', 12),
-('CRYPTO000000010', 0, 'Chainlink', 16);
-
+('CRYPTO000000001', 42000.50, 'Bitcoin', 25),
+('CRYPTO000000002', 3000.75, 'Ethereum', 30),
+('CRYPTO000000003', 1.25, 'Cardano', 15),
+('CRYPTO000000004', 150.80, 'Solana', 20),
+('CRYPTO000000005', 0.10, 'Dogecoin', 5),
+('CRYPTO000000006', 0.50, 'Shiba Inu', 2),
+('CRYPTO000000007', 230.60, 'Polkadot', 18),
+('CRYPTO000000008', 130.20, 'Avalanche', 22),
+('CRYPTO000000009', 1.10, 'XRP', 12),
+('CRYPTO000000010', 25.75, 'Chainlink', 16);
 
 
 -- Commission : 

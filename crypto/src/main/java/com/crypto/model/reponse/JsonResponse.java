@@ -1,10 +1,13 @@
 package com.crypto.model.reponse;
+
+
 public class JsonResponse<T> {
 
     private String status;
     private int code;
     private String error;
-    private T data; // Utilisation générique pour que "data" puisse contenir différents types
+    private Object data; // Utilisation générique pour que "data" puisse contenir différents types
+    // private T data; // Utilisation générique pour que "data" puisse contenir différents types
 
     public JsonResponse() {}
 
@@ -40,11 +43,11 @@ public class JsonResponse<T> {
         if(error==null || error.isEmpty()) this.error = null;
     }
 
-    public T getData() {
+    public Object getData() {
         return data;
     }
 
-    public void setData(T data) {
+    public void setData(Object data) {
         this.data = data;
     }
 
