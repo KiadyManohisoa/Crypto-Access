@@ -8,6 +8,13 @@ import java.sql.ResultSet;
 import com.crypto.exception.authentification.ConnectionEchoueException;
 import com.crypto.model.utilisateur.Utilisateur;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
+@Getter
+@Setter
 public class Admin {
 
     String id;
@@ -26,31 +33,6 @@ public class Admin {
         setMdp(mdp);
     }
 
-    // Getters
-    public String getId() {
-        return id;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public String getMdp() {
-        return mdp;
-    }
-
-    // Setters
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public void setMdp(String mdp) {
-        this.mdp = mdp;
-    }
 
     public void setByNom(Connection connection) throws Exception{
 

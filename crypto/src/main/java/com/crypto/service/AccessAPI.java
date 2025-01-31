@@ -70,7 +70,24 @@ public class AccessAPI {
     public JsonResponse connection(Connection connection, Utilisateur utilisateur) throws Exception {
         
         String url = AccessAPIConfig.BASE_URL+"api/auth/login"; 
-        return appelerSymfony(url, utilisateur);
+
+        JsonResponse<Object> rep = appelerSymfony(url, utilisateur);
+        Object data = rep.getData();
+
+        // Vérifie si 'data' est de type Utilisateur
+        if (data instanceof LinkedHashMap) {
+            LinkedHashMap<String, Object> dataMap = (LinkedHashMap<String, Object>) data;
+
+            if (dataMap.containsKey("utilisateur")) {  // Vérifier la clé utilisateur
+                // Convertir en Utilisateur si 'data' est un Utilisateur
+                Utilisateur u = objectMapper.convertValue(dataMap.get("utilisateur"), Utilisateur.class);
+                rep.setData(utilisateur);  // Remplacer 'data' par l'objet Utilisateur
+            } else  if (dataMap.containsKey("message")){
+                rep.setData(objectMapper.convertValue(dataMap.get("message"), String.class));
+            }
+        } 
+
+        return rep ;
        
     }
 

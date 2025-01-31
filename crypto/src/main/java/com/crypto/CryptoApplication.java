@@ -16,21 +16,11 @@ import com.crypto.service.connection.UtilDB;
 @EnableScheduling
 public class CryptoApplication {
 
-    @Autowired 
-    UtilDB utilDB ;
     public static void main(String[] args) {
 
         SpringApplication.run(CryptoApplication.class, args);
 
 
-        // Admin admin = new Admin("test", "test");
-
-        // try(Connection connection = utilDB.getConnection()) {
-           // admin.se_connecter(connection);
-
-        // } catch (Exception e) {
-        //     // TODO: handle exception
-        // }
-
     }
 }
+

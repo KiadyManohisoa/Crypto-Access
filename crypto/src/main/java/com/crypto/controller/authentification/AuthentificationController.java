@@ -35,21 +35,19 @@ public class AuthentificationController {
         System.out.println("Dans connection");
         
         try(Connection connection = utilDB.getConnection()) {
-            JsonResponse<Map<String,String>> jsonResponse = (JsonResponse<Map<String,String>>)accessAPI.connection(connection, utilisateur) ;
+            JsonResponse<Object> jsonResponse = accessAPI.connection(connection, utilisateur) ;
 
             if(jsonResponse.getError()==null && jsonResponse.getCode()==200) {
                 utilisateur = Utilisateur.getByMail(connection, utilisateur.getMail());
-                model.addAttribute("id", jsonResponse.getData().get("id"));
+                model.addAttribute("id", ((Utilisateur)jsonResponse.getData()).getId());
                 model.addAttribute("mail", utilisateur.getMail());
-                model.addAttribute("message", jsonResponse.getData().get("message"));
+                model.addAttribute("message", jsonResponse.getData());
                 cheminRedirection = "pages/utilisateur/confirmationPIN";
 
-                System.out.println("Authentification en cours "+jsonResponse.getData().get("id"));
 
             } 
-            else redirectAttributes.addFlashAttribute("message", jsonResponse.getData().get("message"));
+            else redirectAttributes.addFlashAttribute("message", jsonResponse.getData());
     
-            System.out.println("Message : "+jsonResponse.getData().get("message")+" Erreur : "+jsonResponse.getError());
         } catch (Exception e) {
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("message", e.getMessage());
@@ -74,13 +72,12 @@ public class AuthentificationController {
 
                 Utilisateur utilisateur = Utilisateur.getByMail(connection, mail);
                 session.setAttribute("utilisateur", utilisateur);
-                model.addAttribute("id", jsonResponse.getData().get("id"));
-                System.out.println("Vérification réussie "+jsonResponse.getData().get("id"));
+                model.addAttribute("id", ((Map<String,String>)jsonResponse.getData()).get("id"));
                 cheminRedirection = "redirect:/accueil";
 
 
             } 
-            redirectAttributes.addFlashAttribute("message", jsonResponse.getData().get("message"));
+            redirectAttributes.addFlashAttribute("message", jsonResponse.getData());
     
             
         } catch (Exception e) {
