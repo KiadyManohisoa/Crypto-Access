@@ -66,7 +66,7 @@ public class Cryptomonnaie {
 
     public static Cryptomonnaie[] getAll(Connection connection) throws SQLException {
         
-        String query = "SELECT * FROM cryptomonnaie";
+        String query = "SELECT * FROM cryptomonnaie order by id";
         
         try (PreparedStatement statement = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {            
             

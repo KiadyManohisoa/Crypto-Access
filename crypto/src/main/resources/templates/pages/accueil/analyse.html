@@ -29,54 +29,46 @@
                 
                 <h5 class="card-title">Analyse sur le cryptomonnaies</h5>
     
-                  <form class="row g-3" action="" method="post">
+                  <form class="row g-3" action="/crypto/analyser" method="post">
                     <div class="col-md-12">
-                        <div class="form-floating mb-3">
-                            <select name="" class="form-select" id="floatingSelect" aria-label="Type analyse">
-                                <option value="">Choisissez le type d'analyse à faire</option>
-                                <option value="">1er quartile</option>
-                                <option value="">Max</option>
-                                <option value="">Min</option>
-                                <option value="">Moyenne</option>
-                                <option value="">Ecart-type</option>
-                            </select>
-                            <label for="floatingSelect">Type analyse</label>
-                        </div>
+                      <div class="form-floating mb-3">
+                        <select name="idTypeAnalyse" class="form-select" id="floatingSelect" aria-label="Type analyse">
+                            <option value="">Choisissez le type d'analyse à faire</option>
+                            <option th:each="type : ${typesAnalyse}" th:value="${type.id}" th:text="${type.libelle}"></option>
+                        </select>
+                        <label for="floatingSelect">Type analyse</label>
+                    </div>
+                    
                     </div>
 
                     <div class="col-md-12">
-                        <div class="form-floating mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="gridCheck1">
-                                <label class="form-check-label" for="gridCheck1">
-                                  Tous
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="gridCheck1">
-                                <label class="form-check-label" for="gridCheck1">
-                                  Bitcoin
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="gridCheck1">
-                                <label class="form-check-label" for="gridCheck1">
-                                  Ether
-                                </label>
-                            </div>
-                        </div>
-                    </div>
+                      <h6 class="fw-semibold text-muted">Cryptomonnaies : </h6>
+                  
+                      <!-- Checkbox "Tous" -->
+                      <div class="form-check mb-2">
+                          <input name="cryptomonnaies[]" value="all" class="form-check-input" type="checkbox" id="checkAll">
+                          <label class="form-check-label" for="checkAll">Tous</label>
+                      </div>
+                  
+                      <!-- Liste des cryptos -->
+                      <div th:each="crypto, iterStat : ${cryptos}" class="form-floating mb-3">
+                          <div class="form-check">
+                              <input name="cryptomonnaies[]" th:value="${crypto.id}" class="form-check-input" type="checkbox" th:id="'crypto_' + ${iterStat.index}">
+                              <label th:text="${crypto.nom}" class="form-check-label" th:for="'crypto_' + ${iterStat.index}"></label>
+                          </div>
+                      </div>
+                  </div>                  
 
                     <div class="col-md-12">
                         <div class="form-floating">
-                          <input name="" type="date" class="form-control" id="nom" placeholder="Nom">
+                          <input name="dateHeureMin" type="datetime-local" class="form-control" id="nom" placeholder="Nom">
                           <label for="floatingName">Date minimale</label>
                         </div>
                     </div>
 
                     <div class="col-md-12">
                         <div class="form-floating">
-                          <input name="" type="date" class="form-control" id="nom" placeholder="Nom">
+                          <input name="dateHeureMax" type="datetime-local" class="form-control" id="nom" placeholder="Nom">
                           <label for="floatingName">Date maximum</label>
                         </div>
                     </div>
@@ -95,12 +87,17 @@
                       <tr>
                         <th scope="col">IdCrypto</th>
                         <th scope="col">Nom de la crypto</th>
-                        <th scope="col">Cours</th>
+                        <th scope="col">Valeur</th>
                         <th scope="col">Date de changement</th>
                       </tr>
                     </thead>
                     <tbody>
-
+                      <tr th:each="chgt : ${chgts}">
+                        <td th:text="${chgt.cryptomonnaie.id}"></td>
+                        <td th:text="${chgt.cryptomonnaie.nom}"></td>
+                        <td th:text="${chgt.valeur}"></td>
+                        <td th:text="${chgt.date}"></td>
+                      </tr>
                     </tbody>
                     
                   </table>
@@ -111,6 +108,16 @@
         </div>
     </div>
   </section>
+
+  <script>
+    document.getElementById('checkAll').addEventListener('change', function () {
+      let checkboxes = document.querySelectorAll('input[name="cryptomonnaies[]"]:not(#checkAll)');
+        
+      checkboxes.forEach(checkbox => {
+          checkbox.disabled = this.checked; 
+      });
+    });
+  </script>
 
 </main>
 

@@ -63,7 +63,6 @@ public class ChangementCoursCrypto {
 
     public void setDate() {
         setDate(Util.getDateHeureMaintenant());
-        
     }
 
     public void setDate(Timestamp date) {
