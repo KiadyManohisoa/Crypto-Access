@@ -3,7 +3,7 @@ import { cryptoChart } from './chart.js';
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    const socket = new WebSocket("ws://localhost:8080/changement-cours");
+    const socket = new WebSocket("ws://localhost:8081/changement-cours");
 
     socket.onmessage = function (event) {
       let data = JSON.parse(event.data);

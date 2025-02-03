@@ -4,8 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 
 import com.crypto.exception.model.ValeurInvalideException;
+import com.crypto.model.commission.Commission;
 import com.crypto.model.crypto.donnees.Donnees;
 
 public class Cryptomonnaie {
@@ -13,7 +15,7 @@ public class Cryptomonnaie {
     private String id;
     private String nom;
     private double valeur;
-
+    private Commission commission;
 
     // Getters et setters
     public String getId() {
@@ -36,9 +38,21 @@ public class Cryptomonnaie {
         return valeur;
     }
 
+    public Commission getCommission() {
+        return commission;
+    }
+
+    public void setCommission(Commission commission) {
+        this.commission = commission;
+    }
+    public void setCommission(Connection connection, LocalDateTime date) throws Exception{
+        this.commission = Commission.getByIdCryptoAndDate(connection,this,date);
+    }
+
     public void setValeur(double valeur) {
         this.valeur = valeur;
     }
+
 
     public void setValeur(String valeur) throws ValeurInvalideException{
         try {

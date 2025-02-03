@@ -7,6 +7,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.crypto.service.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,11 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.crypto.config.DonneesConfig;
 import com.crypto.model.crypto.ChangementCoursCrypto;
 import com.crypto.model.crypto.Cryptomonnaie;
-import com.crypto.model.portefeuille.PorteFeuille;
-import com.crypto.model.portefeuille.PorteFeuilleDetails;
 import com.crypto.model.utilisateur.Genre;
 import com.crypto.model.utilisateur.Utilisateur;
-import com.crypto.model.vente.Vente;
 import com.crypto.service.AccessAPI;
 import com.crypto.service.connection.UtilDB;
 
@@ -88,53 +86,84 @@ public class NavigationController {
         return "pages/accueil/coursDetail"; // Utilise home.html avec le layout
     }
 
-    @GetMapping("/detailVente")
-    public String detailVente(@RequestParam("idVente") String idVente, Model model) {
 
-        try {
-            Connection connection = utilDB.getConnection();
-            Vente vente=Vente.getById(connection, idVente);
-            model.addAttribute("vente", vente);
-            System.out.println("Vente effectuée ");
-
-        } catch (Exception err) { 
-
-            model.addAttribute("message", err.getMessage());
-            System.err.println("Erreur lors de la récupération des données : " + err.getMessage());
-            err.printStackTrace();
-        }
-        return "pages/accueil/detailVente"; // Utilise home.html avec le layout
-    }
-
-    @GetMapping("/vente")
-    public String vente(Model model) {
-        // model.addAttribute("ventes", Achat.findAll(utilDB.getConnection()));
-        try {
-            List<Vente> listeVente=Vente.getVenteDisponible(utilDB.getConnection());
-            model.addAttribute("listeVente", listeVente);
-        } catch (Exception err) {
-            System.err.println("Erreur lors de la récupération des données : " + err.getMessage());
-            err.printStackTrace();
-        }
-        return "pages/accueil/vente"; // Utilise home.html avec le layout
-    }
 
     @GetMapping("/portefeuille")
     public String portefeuille(Model model, HttpSession session) {
         // String idUtilisateur = ((Utilisateur)session.getAttribute("utilisateur")).getId();
-        String idUtilisateur = "USR000000007";
+        String idUtilisateur = "USR000000001";
+
         try {
-            PorteFeuille portefeuille = PorteFeuille.getByIdUtilisateur(idUtilisateur, utilDB.getConnection());
-            List<PorteFeuilleDetails> details = PorteFeuilleDetails.getPorteFeuilleDetailsByPorteFeuille(
-                    portefeuille.getId(),
-                    utilDB.getConnection()
-            );
-            model.addAttribute("details", details);
+            Connection conn=utilDB.getConnection();
+            Utilisateur u=new Utilisateur();
+            u.setId(idUtilisateur);
+            u.setPorteFeuille(conn);
+            model.addAttribute("details", u.getPorteFeuille().getPorteFeuilleDetails());
         } catch (Exception err) {
             model.addAttribute("message", "Erreur lors de la récupération des données : " + err.getMessage());
         }
 
         return "pages/accueil/portefeuille"; // Utilise le fichier portefeuille.html
+    }
+    @GetMapping("/achat")
+    public String achat(Model model, HttpSession session) {
+
+        try {
+            Connection conn=utilDB.getConnection();
+            Cryptomonnaie[] ltcrypto=Cryptomonnaie.getAll(conn);
+            model.addAttribute("listCrypto",ltcrypto);
+        } catch (Exception err) {
+            model.addAttribute("message", "Erreur lors de la récupération des données : " + err.getMessage());
+        }
+
+        return "pages/accueil/achat";
+    }
+
+    @GetMapping("/analysecommission")
+    public String analysecommission(Model model) {
+
+        try {
+            Connection conn=utilDB.getConnection();
+            Cryptomonnaie[] ltcrypto=Cryptomonnaie.getAll(conn);
+            model.addAttribute("listCrypto",ltcrypto);
+        } catch (Exception err) {
+            model.addAttribute("message", "Erreur lors de la récupération des données : " + err.getMessage());
+        }
+
+        return "pages/accueil/analysecommission";
+    }
+    @GetMapping("/commission")
+    public String commission(Model model) {
+
+        try {
+            Connection conn=utilDB.getConnection();
+            Cryptomonnaie[] ltcrypto=Cryptomonnaie.getAll(conn);
+            model.addAttribute("listCrypto",ltcrypto);
+        } catch (Exception err) {
+            model.addAttribute("message", "Erreur lors de la récupération des données : " + err.getMessage());
+        }
+
+        return "pages/accueil/insertCommission";
+    }
+    @GetMapping("/transaction")
+    public String vente(Model model, HttpSession session) {
+
+        try {
+            Connection conn=utilDB.getConnection();
+            Utilisateur u=new Utilisateur();
+            u.setId("USR000000001");
+            u.setTransaction(conn, Util.getDateTimeActuelle().toLocalDateTime());
+            model.addAttribute("listVente",u.getTransaction().getVente());
+            model.addAttribute("listAchat",u.getTransaction().getAchat());
+        } catch (Exception err) {
+            model.addAttribute("message", "Erreur lors de la récupération des données : " + err.getMessage());
+        }
+
+        return "pages/accueil/transaction";
+    }
+    @GetMapping("/alea3")
+    public String alea3() {
+        return "pages/accueil/alea3";
     }
 
     @GetMapping("/deconnection")
@@ -146,7 +175,7 @@ public class NavigationController {
         return "pages/utilisateur/connection"; // Utilise home.html avec le layout
     }
 
-    // Utilisateur Map 
+    // Utilisateur Map
 
     @GetMapping("/connection")
     public String connection(Model model ) {

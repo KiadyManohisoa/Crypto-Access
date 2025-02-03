@@ -23,4 +23,8 @@ public class Util {
         // Convertit LocalDate en java.sql.Date
         return Date.valueOf(localDate);
     }
+    public static Timestamp getDateTimeActuelle() {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        return Timestamp.valueOf(localDateTime);
+    }
 }

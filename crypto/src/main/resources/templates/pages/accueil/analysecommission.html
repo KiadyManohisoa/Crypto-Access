@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse des Commissions</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Analyse des Commissions</h1>
+    <form th:action="@{/analyserCommissions}" method="post">
+        <!-- Zone de liste pour choisir le type d'analyse (somme ou moyenne) -->
+        <div class="mb-3">
+            <label for="typeAnalyse" class="form-label">Type d'Analyse</label>
+            <select id="typeAnalyse" name="typeAnalyse" class="form-select" required>
+                <option value="" disabled selected>Choisir un type d'analyse</option>
+                <option value="somme">Somme</option>
+                <option value="moyenne">Moyenne</option>
+            </select>
+        </div>
+
+        <!-- Zone de liste pour choisir la cryptomonnaie -->
+        <div class="mb-3">
+            <label for="crypto" class="form-label">Cryptomonnaie</label>
+            <select id="crypto" name="idcryptommonaie" class="form-select" required>
+                <option th:each="crypto : ${listCrypto}"
+                        th:value="${crypto.id}"
+                        th:text="${crypto.nom}">Nom de la crypto</option>
+                <option value="">Tous</option>
+
+            </select>
+        </div>
+
+        <!-- Plage de dates -->
+        <div class="mb-3">
+            <label for="dateMin" class="form-label">Date et Heure Min</label>
+            <input type="datetime-local" id="dateMin" name="dateMin" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="dateMax" class="form-label">Date et Heure Max</label>
+            <input type="datetime-local" id="dateMax" name="dateMax" class="form-control" required>
+        </div>
+
+        <!-- Bouton pour soumettre l'analyse -->
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Valider</button>
+        </div>
+    </form>
+
+    <!-- Zone d'affichage des résultats -->
+        <h3>Résultats de l'Analyse</h3>
+        <p th:text="'Type d\'analyse : ' + ${typeAnalyse}"></p>
+        <p th:text="'Cryptomonnaie : ' + ${cryptoNom}"></p>
+
+        <p th:if="${typeAnalyse == 'somme'}">
+            Somme des commissions : <span th:text="${somme}"></span>
+        </p>
+        <p th:if="${typeAnalyse == 'moyenne'}">
+            Moyenne des commissions : <span th:text="${moyenne}"></span>
+        </p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="modal fade" id="sellModal" tabindex="-1" aria-labelledby="sellModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sellModalLabel">Commission<span id="cryptoName"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/insertCommission}" method="post">
+                    <!-- Champ pourcentage -->
+                    <div>
+                        <label for="pourcentage">Pourcentage</label>
+                        <input type="number" id="pourcentage" name="pourcentage" step="0.01" min="0" max="100" required>
+                    </div>
+
+                    <!-- Champ Date/DateTime -->
+                    <div>
+                        <label for="dateChangement">Date</label>
+                        <input type="datetime-local" id="dateChangement" name="dateChangement" required>
+                    </div>
+
+                    <!-- Champ Sélection des Cryptomonnaies -->
+                    <div>
+                        <label for="crypto">Choisir une Cryptomonnaie</label>
+                        <select id="crypto" name="idcryptommonaie" required>
+                            <option value="" disabled selected>Choisir une Cryptomonnaie</option>
+                            <option th:each="crypto : ${listCrypto}"
+                                    th:value="${crypto.id}"
+                                    th:text="${crypto.nom}">Nom de la crypto</option>
+                        </select>
+                    </div>
+
+                    <!-- Bouton soumettre -->
+                    <div>
+                        <button type="submit">Valider</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Message dynamique qui peut être injecté par Thymeleaf -->
+<div id="message" th:text="${message}" style="display: none;"></div>
+
+<script>
+    // Récupère le message depuis l'élément HTML avec id="message"
+    var message = document.getElementById('message').innerText;
+    if (message) {
+        alert(message); // Affiche l'alerte si le message existe
+    }
+</script>
+</body>
+</html>

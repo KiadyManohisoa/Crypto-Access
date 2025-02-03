@@ -12,7 +12,8 @@ CREATE TABLE Utilisateur(
 CREATE TABLE cryptomonnaie(
    id VARCHAR(50)  DEFAULT ('CRYPTO') || LPAD(NEXTVAL('s_crypto')::TEXT, 9, '0'),
    d_valeur NUMERIC(15,2)   default 0,
-   nom VARCHAR(50)  NOT NULL,g
+   nom VARCHAR(50)  NOT NULL,
+   d_commission NUMERIC(15,2)   default 0,
    PRIMARY KEY(id)
 );
 
@@ -34,17 +35,6 @@ CREATE TABLE portefeuille_detail(
    FOREIGN KEY(idCryptomonnaie) REFERENCES cryptomonnaie(id)
 );
 
-CREATE TABLE vente(
-   id VARCHAR(50)  DEFAULT ('VNT') || LPAD(NEXTVAL('s_vente')::TEXT, 9, '0'),
-   quantiteVendu INTEGER default 0,
-   dateVente TIMESTAMP default current_date,
-   d_prixVente NUMERIC(15,2)  ,
-   d_reste INTEGER,
-   idPortefeuilleDetail VARCHAR(50)  NOT NULL,
-   PRIMARY KEY(id),
-   FOREIGN KEY(idPortefeuilleDetail) REFERENCES portefeuille_detail(id)
-);
-
 CREATE TABLE historiqueCrypto(
    id VARCHAR(50)  DEFAULT ('HISTO_CRYPTO') || LPAD(NEXTVAL('s_histocrypto')::TEXT, 9, '0'),
    cours NUMERIC(15,2)  ,
@@ -54,36 +44,42 @@ CREATE TABLE historiqueCrypto(
    FOREIGN KEY(idCryptomonnaie) REFERENCES cryptomonnaie(id)
 );
 
-CREATE TABLE achat(
+CREATE TABLE transactionCrypto(
    id VARCHAR(50)  DEFAULT ('HST_TRS') || LPAD(NEXTVAL('s_historique_transaction')::TEXT, 9, '0'),
-   dateTransaction TIMESTAMP default current_timestamp,
+   dateTransaction NUMERIC(15,2)   NOT NULL default current_timestamp,
    quantite INTEGER default 0,
-   d_prixUnitaire VARCHAR(50) ,
+   d_prixUnitaire NUMERIC(15,2)   NOT NULL,
    d_commission NUMERIC(5,2)   default 0,
-   idVente VARCHAR(50)  NOT NULL,
    idCryptomonnaie VARCHAR(50)  NOT NULL,
-   id_1 VARCHAR(14)  NOT NULL,
-   id_2 VARCHAR(14)  NOT NULL,
+   idAcheteur VARCHAR(14) ,
+   idVendeur VARCHAR(14) ,
    PRIMARY KEY(id),
-   FOREIGN KEY(idVente) REFERENCES vente(id),
    FOREIGN KEY(idCryptomonnaie) REFERENCES cryptomonnaie(id),
-   FOREIGN KEY(id_1) REFERENCES Utilisateur(id),
-   FOREIGN KEY(id_2) REFERENCES Utilisateur(id)
+   FOREIGN KEY(idAcheteur) REFERENCES Utilisateur(id),
+   FOREIGN KEY(idVendeur) REFERENCES Utilisateur(id)
 );
+ALTER TABLE transactionCrypto
+ALTER COLUMN d_prixunitaire
+SET DATA TYPE NUMERIC(15,2)
+USING d_prixunitaire::NUMERIC(15,2);
 
 CREATE TABLE commission(
    id VARCHAR(50)  DEFAULT ('CMS') || LPAD(NEXTVAL('s_commission')::TEXT, 9, '0'),
    pourcentage NUMERIC(5,2)   default 0,
    dateChangement TIMESTAMP,
-   PRIMARY KEY(id)
+   idCryptomonnaie VARCHAR(50)  NOT NULL,
+   PRIMARY KEY(id),
+   FOREIGN KEY(idCryptomonnaie) REFERENCES cryptomonnaie(id)
 );
 
 CREATE TABLE fond(
    id VARCHAR(50)  DEFAULT ('FND') || LPAD(NEXTVAL('s_fond')::TEXT, 9, '0'),
    montant NUMERIC(15,2)  ,
    dateMouvement TIMESTAMP default current_date,
+   idTransactionCrypto VARCHAR(50)  NOT NULL,
    idUtilisateur VARCHAR(14)  NOT NULL,
    PRIMARY KEY(id),
+   FOREIGN KEY(idTransactionCrypto) REFERENCES transactionCrypto(id),
    FOREIGN KEY(idUtilisateur) REFERENCES Utilisateur(id)
 );
 

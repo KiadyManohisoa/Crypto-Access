@@ -159,7 +159,7 @@ public class ChangementCoursCrypto {
                     historique.setId(resultSet.getString("id"));
                     historique.setValeur(resultSet.getDouble("cours"));
                     historique.setDate(resultSet.getTimestamp("dateChangement"));
-                    Cryptomonnaie cryptomonnaie = new Cryptomonnaie(resultSet.getString("idcryptomonnaie"), resultSet.getString("nom"), resultSet.getDouble("valeur"));
+                    Cryptomonnaie cryptomonnaie = new Cryptomonnaie(resultSet.getString("idcryptomonnaie"), resultSet.getString("nom"), resultSet.getDouble("d_valeur"));
                     historique.setCryptomonnaie(cryptomonnaie);
                     
                     historiques.add(historique);
