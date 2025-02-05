@@ -41,6 +41,7 @@ public class JsonResponse<T> {
 
     public void setError(String error) {
         if(error==null || error.isEmpty()) this.error = null;
+        else this.error = error;
     }
 
     public Object getData() {

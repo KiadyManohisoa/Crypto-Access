@@ -17,7 +17,6 @@ import com.crypto.model.crypto.analyse.type.Max;
 import com.crypto.model.crypto.analyse.type.Min;
 import com.crypto.model.crypto.analyse.type.Moyenne;
 import com.crypto.model.crypto.analyse.type.PremierQuartile;
-import com.crypto.service.util.Util;
 
 public class Analyseur {
     

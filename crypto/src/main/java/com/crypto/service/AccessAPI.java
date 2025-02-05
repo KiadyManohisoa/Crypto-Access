@@ -81,9 +81,9 @@ public class AccessAPI {
             if (dataMap.containsKey("utilisateur")) {  // Vérifier la clé utilisateur
                 // Convertir en Utilisateur si 'data' est un Utilisateur
                 Utilisateur u = objectMapper.convertValue(dataMap.get("utilisateur"), Utilisateur.class);
-                rep.setData(utilisateur);  // Remplacer 'data' par l'objet Utilisateur
+                rep.setData(u);  // Remplacer 'data' par l'objet Utilisateur
             } else  if (dataMap.containsKey("message")){
-                rep.setData(objectMapper.convertValue(dataMap.get("message"), String.class));
+                rep.setData(dataMap);
             }
         } 
 
