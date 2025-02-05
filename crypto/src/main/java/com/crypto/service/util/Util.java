@@ -1,6 +1,7 @@
 package com.crypto.service.util;
 
 import java.sql.Date;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -8,6 +9,17 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 public class Util {
+
+    public static Timestamp formatDateTimeLocalToTimestamp(String date) throws Exception {
+        Timestamp datyLera = null;
+        try {
+            String formattedDate = date.replace("T", " ") + ":00";
+            datyLera = Timestamp.valueOf(formattedDate);
+        } catch (Exception e) {
+            throw new Exception("Format invalide pour la date-heure : "+date);
+        }
+        return datyLera;
+    }
     
     public static Timestamp getDateHeureMaintenant(){
         LocalDateTime now = LocalDateTime.now();

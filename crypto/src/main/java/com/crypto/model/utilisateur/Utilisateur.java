@@ -9,11 +9,13 @@ import java.sql.SQLException;
 import com.crypto.exception.model.ValeurInvalideException;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Utilisateur {
 
     String id ;
@@ -173,7 +175,7 @@ public class Utilisateur {
 
     // Méthode pour créer un portefeuille
     void creerPortefeuille(Connection connection) throws Exception {
-        String query = "INSERT INTO portefeuille (id, id_idUtilisateur) VALUES (DEFAULT, ?)";
+        String query = "INSERT INTO portefeuille (id, idUtilisateur) VALUES (DEFAULT, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, getId());
             statement.executeUpdate();
@@ -188,7 +190,6 @@ public class Utilisateur {
             creerPortefeuille(connection);
             connection.commit();
         } catch (Exception e) {
-            System.out.println("Erreur :"+e.getMessage());
             connection.rollback();
         } finally {
             connection.setAutoCommit(true);

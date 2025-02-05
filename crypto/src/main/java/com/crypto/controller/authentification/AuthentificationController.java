@@ -32,37 +32,31 @@ public class AuthentificationController {
     public String connection(@ModelAttribute Utilisateur utilisateur, RedirectAttributes redirectAttributes, Model model) {
         
         String cheminRedirection = "redirect:/connection";
-        System.out.println("Dans connection");
         
         try(Connection connection = utilDB.getConnection()) {
-            JsonResponse<Map<String,String>> jsonResponse = (JsonResponse<Map<String,String>>)accessAPI.connection(connection, utilisateur) ;
+            JsonResponse<Object> jsonResponse = accessAPI.connection(connection, utilisateur) ;
 
             if(jsonResponse.getError()==null && jsonResponse.getCode()==200) {
                 utilisateur = Utilisateur.getByMail(connection, utilisateur.getMail());
-                model.addAttribute("id", jsonResponse.getData().get("id"));
+                model.addAttribute("id", ((Map<String,String>)jsonResponse.getData()).get("id"));
                 model.addAttribute("mail", utilisateur.getMail());
-                model.addAttribute("message", jsonResponse.getData().get("message"));
+                model.addAttribute("message", ((Map<String,String>)jsonResponse.getData()).get("message"));
                 cheminRedirection = "pages/utilisateur/confirmationPIN";
-
-                System.out.println("Authentification en cours "+jsonResponse.getData().get("id"));
-
             } 
-            else redirectAttributes.addFlashAttribute("message", jsonResponse.getData().get("message"));
+            else redirectAttributes.addFlashAttribute("message", jsonResponse.getError());
     
-            System.out.println("Message : "+jsonResponse.getData().get("message")+" Erreur : "+jsonResponse.getError());
         } catch (Exception e) {
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("message", e.getMessage());
             
         }
-        System.out.println("Redirection ...");
         return cheminRedirection;
     }
 
     @PostMapping("/crypto/PIN")
     public String PIN(HttpSession session, @RequestParam("mail") String mail, @RequestParam("id") String id, @RequestParam("n1") String n1, @RequestParam("n2") String n2, @RequestParam("n3") String n3, @RequestParam("n4") String n4, RedirectAttributes redirectAttributes, Model model) {        
         
-        String cheminRedirection = "redirect:/connection";
+        String cheminRedirection = "redirect:/confirmationPIN";
         StringBuilder pin = new StringBuilder();
         pin.append(n1).append(n2).append(n3).append(n4); 
         
@@ -70,22 +64,23 @@ public class AuthentificationController {
             JsonResponse<Map<String,String>> jsonResponse = (JsonResponse<Map<String,String>>)accessAPI.verification(connection, id, pin.toString()) ;
 
             if(jsonResponse.getError()==null && jsonResponse.getCode()==200) {
-
                 Utilisateur utilisateur = Utilisateur.getByMail(connection, mail);
                 session.setAttribute("utilisateur", utilisateur);
-                model.addAttribute("id", jsonResponse.getData().get("id"));
-                System.out.println("Vérification réussie "+jsonResponse.getData().get("id"));
+                model.addAttribute("id", ((Map<String,String>)jsonResponse.getData()).get("id"));
                 cheminRedirection = "redirect:/accueil";
-
-
-            } 
-            redirectAttributes.addFlashAttribute("message", jsonResponse.getData().get("message"));
-    
+            } else {
+                String error = jsonResponse.getError();
+                if(error.contains("Le compte est temporairement bloqué") || error.contains("Le pin actuel est déjà expiré")) {
+                    cheminRedirection="redirect:/connection";
+                }
+                throw new Exception(error);
+            }
             
         } catch (Exception e) {
             e.printStackTrace();
+            redirectAttributes.addFlashAttribute("id", id);
+            redirectAttributes.addFlashAttribute("mail", mail);
             redirectAttributes.addFlashAttribute("message", e.getMessage());
-            
         }
         System.out.println("Redirection ...");
         return cheminRedirection;
@@ -99,15 +94,15 @@ public class AuthentificationController {
          try(Connection connection = utilDB.getConnection()) {
             // Utilisateur utilisateur = new Utilisateur("Joe","Marah", "2004-12-12", "joemarah64@gmail.com");
             // utilisateur.setMdp("0000");
-            String genre = "GR02";
-            utilisateur.setGenre(genre);
+            // String genre = "GR02";
+            // utilisateur.setGenre(genre);
 
             JsonResponse jsonResponse = accessAPI.inscription(connection, utilisateur) ;
             if(jsonResponse.getError()==null && jsonResponse.getCode()==200){
                 utilisateur.insert(utilDB.getConnection());
                 session.setAttribute("utilisateur", utilisateur);
-                cheminRedirection = "redirect:/accueil";
-
+                cheminRedirection = "redirect:/connection";
+                redirectAttributes.addFlashAttribute("message", "Inscription réussie");
             } else redirectAttributes.addFlashAttribute("message", jsonResponse.getError());
 
             // cheminRedirection = new Wrapper().enJSON(utilisateur);
@@ -115,9 +110,7 @@ public class AuthentificationController {
         } catch (Exception e) {
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("message", e.getMessage());
-            
         }
-        redirectAttributes.addFlashAttribute("message", "HELLO");
 
         return cheminRedirection;
     }

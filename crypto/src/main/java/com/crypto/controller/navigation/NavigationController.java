@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.crypto.config.DonneesConfig;
 import com.crypto.model.crypto.ChangementCoursCrypto;
 import com.crypto.model.crypto.Cryptomonnaie;
+import com.crypto.model.crypto.analyse.Analyseur;
 import com.crypto.model.portefeuille.PorteFeuille;
 import com.crypto.model.portefeuille.PorteFeuilleDetails;
 import com.crypto.model.utilisateur.Genre;
@@ -31,9 +32,21 @@ public class NavigationController {
        
     @Autowired
     private AccessAPI accessAPI ;
-
     @Autowired
     private UtilDB utilDB ;
+
+    @GetMapping("/form/analyse")
+    public String getFormAnalyse(Model model) {
+        try(Connection connection = utilDB.getConnection()) {
+            Cryptomonnaie [] cryptos = Cryptomonnaie.getAll(connection);
+            model.addAttribute("cryptos", cryptos);
+            model.addAttribute("typesAnalyse", Analyseur.typesAnalyses);
+        } catch(Exception err) {
+            model.addAttribute("message", err.getMessage());
+        }
+        return "pages/accueil/analyse"; // Utilise home.html avec le layout
+    }
+    
     // Accueil Map
     @GetMapping("/accueil")
     public String accueil() {

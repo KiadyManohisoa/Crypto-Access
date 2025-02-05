@@ -74,7 +74,6 @@ public class AchatController {
     @PostMapping("/confirm/email")
     public ModelAndView confirmAchat(@RequestParam String idachat) throws SQLException {
         ModelAndView mv = new ModelAndView("/");
-        String message  = "";
         return mv;
     }
 
