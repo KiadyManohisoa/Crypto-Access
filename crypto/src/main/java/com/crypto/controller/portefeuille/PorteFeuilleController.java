@@ -27,8 +27,7 @@ public class PorteFeuilleController {
             @RequestParam("quantity") int quantity,
             @RequestParam("idportefeuilledetail") String idportefeuilledetail) {
 
-        try {
-            Connection connection = utilDB.getConnection();
+        try(Connection connection = utilDB.getConnection()) {
             PorteFeuilleDetails portefeuilleDetail = PorteFeuilleDetails.getById(idportefeuilledetail, connection);
 
             if (portefeuilleDetail.getQuantite() >= quantity) {

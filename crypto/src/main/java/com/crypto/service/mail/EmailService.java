@@ -4,7 +4,6 @@ import jakarta.mail.internet.*;
 import java.util.Map;
 import java.util.Properties;
 
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @Service

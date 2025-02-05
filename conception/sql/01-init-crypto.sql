@@ -9,3 +9,11 @@ CREATE SEQUENCE s_portefeuille START 1 INCREMENT 1 NO CYCLE;
 CREATE SEQUENCE s_vente START 1 INCREMENT 1 NO CYCLE;
 CREATE SEQUENCE s_achat START 1 INCREMENT 1 NO CYCLE;
 CREATE SEQUENCE s_histocrypto START 1 INCREMENT 1 NO CYCLE;
+<<<<<<< Updated upstream:conception/sql/01-init-crypto.sql
+=======
+CREATE SEQUENCE s_commission START 1 INCREMENT 1 NO CYCLE;
+CREATE SEQUENCE s_fond START 1 INCREMENT 1 NO CYCLE;
+CREATE SEQUENCE s_admin START 1 INCREMENT 1 NO CYCLE;
+CREATE SEQUENCE s_fond_attente START 1 INCREMENT 1 NO CYCLE;
+CREATE SEQUENCE s_historiqueUtilisateur START 1 INCREMENT 1 NO CYCLE;
+>>>>>>> Stashed changes:conception/sql/docker-base/01-init-crypto.sql

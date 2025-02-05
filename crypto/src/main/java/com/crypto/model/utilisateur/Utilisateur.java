@@ -206,6 +206,25 @@ public class Utilisateur {
         return null;
     }
 
+    public static Utilisateur getById(Connection connection, String id) throws SQLException {
+        String query = "SELECT * FROM utilisateur WHERE id = ?";
+        
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, id);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    // Si un utilisateur est trouvé, on le crée et on retourne l'objet Utilisateur
+                    String nom = resultSet.getString("nom");
+                    String prenom = resultSet.getString("prenom");
+                    String email = resultSet.getString("mail");
+                    Date dateNaissance = resultSet.getDate("date_naissance");
+                    return new Utilisateur(id, null, nom, prenom, dateNaissance, email);
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
         // Formater la date de naissance si elle n'est pas nulle

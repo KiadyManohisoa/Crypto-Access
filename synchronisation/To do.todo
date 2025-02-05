@@ -1,0 +1,66 @@
+
+Objectif : 
+
+    - Synchronisation des données de la base locale avec firebase 
+
+Etapes : 
+
+    ✘ Création d'un nouveau projet avec firebase @cancelled (2/3/2025, 9:12:13 AM)
+    ✔ Mise en place d'une nouvelle collection utilisateur dans firebase @done (2/3/2025, 9:12:21 AM)
+    ✔ Création de collection de dernière dateDernièreRécupération @done (2/3/2025, 9:13:41 AM)
+    ☐ Synchronisation des données de connection : 
+        . Création d'un bouton "Synchronisation Utilisateur"
+        . Base : 
+            * table historiqueUtilisateur : 
+                - id, idUser, opération, dateExecution 
+                - trigger : 
+                    . update : table utilisateur 
+                    . suppression : table utilisateur 
+                    . insertion : table utilisateur 
+        . Test d'insertion 
+        . Test de mise à jour 
+    
+Workflow : 
+
+    Firebase  : 
+
+        ✔ Modification de l'autorisation de lecture avec authorisée sans etre authentifiée @done (2/4/2025, 12:01:58 PM)
+        ✔ Création de collection : @done (2/4/2025, 12:11:16 PM)
+            . dateDernièreRecupération : dateDernièreRecupération 
+    
+    Dans le fournisseur d'identité : 
+        ✔ Création de table historiqueUtilisateur dans la base du founisseur d'identité avec les triggers et les fonctions nécessaires @done (2/4/2025, 12:14:25 PM)
+
+        ✔ Création de classe historiqueUtilisateur : @done (2/4/2025, 12:14:31 PM)
+            . id, Utiisateur, dateModif, action 
+            . fonctions historiqueUtilisateur[] getByDate(date) 
+
+        ✔ Controller qui expose getByDate() avec restApi @done (2/4/2025, 12:30:46 PM)
+
+        ✔ Test de la réponse @done (2/4/2025, 12:30:49 PM)
+    
+    Dans Crypto application : 
+        ✔ Création de classe historiqueUtilisateur : @done (2/4/2025, 2:35:52 PM)
+            . id, Utiisateur, dateModif, action 
+            . fonctions historiqueUtilisateur[] getByDate(date) 
+
+        ✔ Test de la fonction @done (2/4/2025, 2:44:53 PM)
+
+        ✔ Controller qui expose getByDate() avec restApi @done (2/4/2025, 2:52:18 PM)
+        ✔ Controller qui expose la session avec restApi @done (2/4/2025, 2:52:19 PM) 
+        ✔ Test de controller avec getByDate @done (2/4/2025, 3:00:54 PM)
+        ✔ Test de getSession() @done (2/4/2025, 3:02:38 PM)
+
+    
+    Fonction de mise à jour : 
+
+        ✔ Création de fonction js qui récupère la valeur de date récupération max @done (2/4/2025, 5:05:32 PM)
+
+        ☐ Création de fonction js qui récupère le token 
+        ☐ Création de js qui récupère la session + update historiqueUtilisateur dans fournisseur d'identité + 
+            update historiqueUtilisateur dans le crypto 
+        ☐ Insértion de données dans la base de firebase 
+
+
+    
+  

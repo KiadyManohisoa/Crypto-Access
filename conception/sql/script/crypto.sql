@@ -119,3 +119,14 @@ CREATE TABLE cryptofavori(
    FOREIGN KEY(idUtilisateur) REFERENCES Utilisateur(id),
    FOREIGN KEY(idCryptomonnaie) REFERENCES cryptomonnaie(id)
 );
+
+CREATE TABLE historiqueUtilisateur (
+    id VARCHAR(50) DEFAULT ('HST_UTL') || LPAD(NEXTVAL('s_historiqueUtilisateur')::TEXT, 9, '0'),
+    idUtilisateur VARCHAR(50) NOT NULL,
+    operation VARCHAR(50) NOT NULL,
+    dateExecution TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+     PRIMARY KEY(id),
+    FOREIGN KEY(idUtilisateur) REFERENCES Utilisateur(id)
+
+);
+

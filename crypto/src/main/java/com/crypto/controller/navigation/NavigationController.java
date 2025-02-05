@@ -91,8 +91,8 @@ public class NavigationController {
     @GetMapping("/detailVente")
     public String detailVente(@RequestParam("idVente") String idVente, Model model) {
 
-        try {
-            Connection connection = utilDB.getConnection();
+        try(Connection connection = utilDB.getConnection()) {
+            
             Vente vente=Vente.getById(connection, idVente);
             model.addAttribute("vente", vente);
             System.out.println("Vente effectuée ");
@@ -109,8 +109,8 @@ public class NavigationController {
     @GetMapping("/vente")
     public String vente(Model model) {
         // model.addAttribute("ventes", Achat.findAll(utilDB.getConnection()));
-        try {
-            List<Vente> listeVente=Vente.getVenteDisponible(utilDB.getConnection());
+        try(Connection connection = utilDB.getConnection()) {
+            List<Vente> listeVente=Vente.getVenteDisponible(connection);
             model.addAttribute("listeVente", listeVente);
         } catch (Exception err) {
             System.err.println("Erreur lors de la récupération des données : " + err.getMessage());
@@ -123,11 +123,11 @@ public class NavigationController {
     public String portefeuille(Model model, HttpSession session) {
         // String idUtilisateur = ((Utilisateur)session.getAttribute("utilisateur")).getId();
         String idUtilisateur = "USR000000007";
-        try {
-            PorteFeuille portefeuille = PorteFeuille.getByIdUtilisateur(idUtilisateur, utilDB.getConnection());
+        try(Connection connection = utilDB.getConnection()) {
+            PorteFeuille portefeuille = PorteFeuille.getByIdUtilisateur(idUtilisateur, connection);
             List<PorteFeuilleDetails> details = PorteFeuilleDetails.getPorteFeuilleDetailsByPorteFeuille(
                     portefeuille.getId(),
-                    utilDB.getConnection()
+                    connection
             );
             model.addAttribute("details", details);
         } catch (Exception err) {
