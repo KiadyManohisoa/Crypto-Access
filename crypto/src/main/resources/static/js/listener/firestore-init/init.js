@@ -2,15 +2,15 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 import { getFirestore, collection, query, orderBy, limit } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
+
+
 const firebaseConfig = {
-    apiKey: "AIzaSyApdM40OFJfJm7DPOVtpJVEEn0na01Bk9I",
-    authDomain: "first-firebase-5ca70.firebaseapp.com",
-    databaseURL: "https://first-firebase-5ca70-default-rtdb.firebaseio.com",
-    projectId: "first-firebase-5ca70",
-    storageBucket: "first-firebase-5ca70.firebasestorage.app",
-    messagingSenderId: "352504038508",
-    appId: "1:352504038508:web:c9369eb3cfa7ae9aca8449",
-    measurementId: "G-6ZGHBGG14J"
+    apiKey: "TON_API_KEY",
+    authDomain: "TON_PROJET.firebaseapp.com",
+    projectId: "TON_PROJET",
+    storageBucket: "TON_PROJET.appspot.com",
+    messagingSenderId: "TON_ID",
+    appId: "TON_APP_ID"
 };
 
 // Initialiser Firebase
