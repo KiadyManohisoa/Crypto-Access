@@ -8,12 +8,17 @@ import java.util.stream.Collectors;
 
 import com.crypto.model.crypto.ChangementCoursCrypto;
 import com.crypto.model.crypto.Cryptomonnaie;
+import com.crypto.model.crypto.TransactionCrypto;
 import com.crypto.model.crypto.analyse.TypeAnalyse;
 
 public class PremierQuartile extends TypeAnalyse {
     
     public PremierQuartile(String id, String libelle) {
         super(id, libelle);
+    }
+
+    public TransactionCrypto[] appliquerTypeAnalyseCommission(HashMap<String, List<TransactionCrypto>> transactions){
+        return new TransactionCrypto[0];
     }
 
     public ChangementCoursCrypto[] appliquerTypeAnalyse(HashMap<String, List<ChangementCoursCrypto>> changements) {

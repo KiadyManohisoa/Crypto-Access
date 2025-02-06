@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.crypto.model.crypto.ChangementCoursCrypto;
+import com.crypto.model.crypto.TransactionCrypto;
 import com.crypto.model.crypto.analyse.TypeAnalyse;
 
 public class Min extends TypeAnalyse {
@@ -16,6 +17,9 @@ public class Min extends TypeAnalyse {
         super(id, libelle);
     }
 
+    public TransactionCrypto[] appliquerTypeAnalyseCommission(HashMap<String, List<TransactionCrypto>> transactions){
+        return new TransactionCrypto[0];
+    }
 
     public ChangementCoursCrypto[] appliquerTypeAnalyse(HashMap<String, List<ChangementCoursCrypto>> changements) {
         List<ChangementCoursCrypto> resultats = new ArrayList<>();

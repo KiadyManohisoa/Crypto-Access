@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="fragments/frontoffice/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page de détail vente</title>
+</head>
+<body>
+<!-- Remplacer le fragment content par le contenu spécifique de cette page -->
+<main id="main" class="main" layout:fragment="content">
+
+    <div class="pagetitle">
+        <h1>Section Vente</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/accueil}">Accueil</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/vente}">Vente</a></li>
+                <li class="breadcrumb-item">Détail Vente</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section">
+        <div class="row">
+            <div class="container my-5">
+
+                <div class="mb-4">
+                    <a th:href="@{/vente}" class="btn btn-outline-primary rounded-pill">
+                        <i class="bi bi-arrow-left me-2"></i> Retour
+                    </a>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-lg-7">
+                        <div class="card shadow-sm">
+                            <!-- Titre de la cryptomonnaie -->
+                            <div class="card-header text-center bg-light text-white">
+                                <h4 class="card-title mb-0" th:text="${vente.id}">Nom de la Cryptomonnaie</h4>
+                            </div>
+                            
+                            <!-- Corps de la carte -->
+                            <div class="card-body">
+                                <!-- Première ligne : Vendeur et Prix -->
+                                <div class="row mb-3">
+                                    <div class="col-6 text-muted text-start">
+                                        <small>Vendu par : <strong th:text="${vente.portefeuilleDetail.porteFeuille.utilisateur.nom}"></strong></small>
+                                    </div>
+                                    <div class="col-6 text-end">
+                                      <h5>Prix unitaire : <span th:text="${vente.portefeuilleDetail.cryptomonnaie.valeur}" class="text-success"></span></h5>
+                                  </div>
+                                </div>
+                                <form method="post" action="/achat/insert">
+                                <!-- Deuxième ligne : Quantité et Bouton Acheter -->
+                                <div class="row align-items-center">
+                                    <div class="col-6 d-flex align-items-center">
+                                        <label for="quantityInput" class="form-label mb-0 me-2">Quantité:</label>
+                                        <input type="hidden" id="idvente" class="form-control" min="1" name="idVente" th:value="${vente.id}">
+                                        <input type="number" id="quantityInput" class="form-control" min="1" name="quantite" >
+                                    </div>
+                                    <div class="col-6 text-end">
+                                        <button type="submit" class="btn btn-success rounded-pill px-4">Acheter</button>
+                                    </div>
+                                </div>
+                              </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+</body>
+</html>

@@ -5,8 +5,13 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.crypto.exception.model.ValeurInvalideException;
+import com.crypto.model.portefeuille.PorteFeuille;
+import com.crypto.model.transaction.Transaction;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -27,6 +32,42 @@ public class Utilisateur {
     String mdp ;
     Genre genre ; // Agument pour le founisseur d'identité
     String lienImage ;
+    Transaction transaction;
+    PorteFeuille porteFeuille;
+
+    public PorteFeuille getPorteFeuille() {
+        return porteFeuille;
+    }
+
+    public void setPorteFeuilleByConnection(Connection connection) {
+        String query = " SELECT p.*,u.* FROM portefeuille p INNER JOIN utilisateur u ON p.idUtilisateur = u.id WHERE u.id = ?";
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, this.getId());
+
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    Utilisateur utilisateur = new Utilisateur(rs.getString("idutilisateur"));
+                    utilisateur.setNom(rs.getString("nom"));
+                    utilisateur.setPrenom(rs.getString("prenom"));
+                    utilisateur.setDateNaissance(rs.getDate("date_naissance"));
+                    utilisateur.setMail(rs.getString("mail"));
+                    this.porteFeuille = new PorteFeuille();
+                    this.porteFeuille.setId(rs.getString("id"));
+                    this.porteFeuille.setPorteFeuilleDetailsByConnection(connection);
+                }
+            }
+        }
+        catch (Exception exception){
+            exception.printStackTrace();
+        }
+    }
+
+
+    public void setPorteFeuille(PorteFeuille porteFeuille) {
+        this.porteFeuille = porteFeuille;
+    }
+
 
     // Getters et Setters
     public String getId() {
@@ -100,6 +141,19 @@ public class Utilisateur {
         this.mdp = mdp;
     }
 
+    public Transaction getTransaction() {
+        return transaction;
+    }
+
+    public void setTransaction(Transaction transaction) {
+        this.transaction = transaction;
+    }
+    public void setTransaction(Connection c,LocalDateTime dateMax) {
+        this.transaction = Transaction.getTransactionByUtilisateur(this,c,dateMax);
+        System.out.println("tailleacha"+this.transaction.getAchat().size());
+        System.out.println("taillevente"+this.transaction.getVente().size());
+    }
+
     @JsonProperty("genre")
     public String getGenreID() {
         if(genre!=null) return genre.getId();
@@ -147,6 +201,33 @@ public class Utilisateur {
         setPrenom(prenom);
         setDateNaissance(dateNaissance);
         setMail(mail);
+    }
+
+    public static List<Utilisateur> getAll(Connection connection) throws SQLException {
+        List<Utilisateur> utilisateurs = new ArrayList<>();
+        String query = "SELECT * FROM utilisateur";
+
+        try (PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                String id = resultSet.getString("id");
+                String nom = resultSet.getString("nom");
+                String prenom = resultSet.getString("prenom");
+                Date dateNaissance = resultSet.getDate("date_naissance");
+                String mail = resultSet.getString("mail");
+
+                Utilisateur utilisateur = new Utilisateur();
+                utilisateur.setId(id);
+                utilisateur.setNom(nom);
+                utilisateur.setPrenom(prenom);
+                utilisateur.setDateNaissance(dateNaissance);
+                utilisateur.setMail(mail);
+                utilisateurs.add(utilisateur);
+            }
+        }
+
+        return utilisateurs;
     }
 
 

@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.crypto.exception.model.ValeurInvalideException;
+import com.crypto.model.commission.Commission;
 import com.crypto.model.crypto.donnees.Donnees;
 
 public class Cryptomonnaie {
@@ -13,9 +14,18 @@ public class Cryptomonnaie {
     private String id;
     private String nom;
     private double valeur;
-
+    Commission commission;
 
     // Getters et setters
+
+    public Commission getCommission() {
+        return commission;
+    }
+
+    public void setCommission(Commission commission) {
+        this.commission = commission;
+    }
+
     public String getId() {
         return id;
     }
@@ -57,10 +67,30 @@ public class Cryptomonnaie {
         setId(id);
     }
 
+    public Cryptomonnaie(String id, String nom) {
+        setId(id);
+        setNom(nom);
+    }
+
     public Cryptomonnaie(String id, String nom, double valeur) {
         setId(id);
         setNom(nom);
         setValeur(valeur);
+    }
+
+    public void mettreAjour(Connection co) throws Exception {
+        PreparedStatement st = null;
+        String query = "update cryptomonnaie set d_commission=(?) where id=(?)";
+        try {
+            st = co.prepareStatement(query);
+            st.setDouble(1, this.getCommission().getPourcentage());
+            st.setString(2, this.getId());
+            st.executeUpdate();
+        } finally {
+            if (st != null) {
+                st.close();
+            }
+        }
     }
     
 
