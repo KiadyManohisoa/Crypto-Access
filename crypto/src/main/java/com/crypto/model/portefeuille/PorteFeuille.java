@@ -5,10 +5,35 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PorteFeuille {
     private String id;
     private Utilisateur utilisateur;
+    private List<PorteFeuilleDetails> porteFeuilleDetails;
+
+
+    public void setPorteFeuilleDetailsByConnection(Connection connection) throws Exception {
+        List<PorteFeuilleDetails> details = new ArrayList<>();
+        String query = "SELECT * FROM portefeuille_detail  WHERE idPortefeuille = ?";
+        try(PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, this.getId());
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    PorteFeuilleDetails detail = PorteFeuilleDetails.getById(rs.getString("id"),connection);
+                    details.add(detail);
+                }
+            }
+            catch(Exception e) {
+                throw e;
+            }
+        }
+        catch(Exception e) {
+            throw e;
+        }
+    }
+    
 
     public PorteFeuille() {
     }
@@ -32,6 +57,14 @@ public class PorteFeuille {
 
     public void setUtilisateur(Utilisateur utilisateur) {
         this.utilisateur = utilisateur;
+    }
+
+    public List<PorteFeuilleDetails> getPorteFeuilleDetails() {
+        return porteFeuilleDetails;
+    }
+
+    public void setPorteFeuilleDetails(List<PorteFeuilleDetails> porteFeuilleDetails) {
+        this.porteFeuilleDetails = porteFeuilleDetails;
     }
 
     // Méthode pour récupérer un portefeuille par l'ID de l'utilisateur

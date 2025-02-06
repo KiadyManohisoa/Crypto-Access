@@ -51,18 +51,18 @@ CREATE TABLE transactionCrypto(
    d_prixUnitaire VARCHAR(50) ,
    d_commission NUMERIC(5,2)   default 0,
    idCryptomonnaie VARCHAR(50)  NOT NULL,
-   id_1 VARCHAR(14) ,
-   id_2 VARCHAR(14) ,
+   idAcheteur VARCHAR(14) ,
+   idVendeur VARCHAR(14) ,
    PRIMARY KEY(id),
    FOREIGN KEY(idCryptomonnaie) REFERENCES cryptomonnaie(id),
-   FOREIGN KEY(id_1) REFERENCES Utilisateur(id),
-   FOREIGN KEY(id_2) REFERENCES Utilisateur(id)
+   FOREIGN KEY(idAcheteur) REFERENCES Utilisateur(id),
+   FOREIGN KEY(idVendeur) REFERENCES Utilisateur(id)
 );
 
 CREATE TABLE commission(
    id VARCHAR(50)  DEFAULT ('CMS') || LPAD(NEXTVAL('s_commission')::TEXT, 9, '0'),
    pourcentage NUMERIC(5,2)   default 0,
-   dateChangement TIMESTAMP,
+   dateChangement TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    idCryptomonnaie VARCHAR(50)  NOT NULL,
    PRIMARY KEY(id),
    FOREIGN KEY(idCryptomonnaie) REFERENCES cryptomonnaie(id)

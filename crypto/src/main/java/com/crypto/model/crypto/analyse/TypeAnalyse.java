@@ -4,11 +4,14 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.crypto.model.crypto.ChangementCoursCrypto;
+import com.crypto.model.crypto.TransactionCrypto;
 
 public abstract class TypeAnalyse {
     
     String id;
     String libelle;
+
+    public abstract TransactionCrypto[] appliquerTypeAnalyseCommission(HashMap<String, List<TransactionCrypto>> transactions);
 
     public abstract ChangementCoursCrypto[] appliquerTypeAnalyse( HashMap<String, List<ChangementCoursCrypto>> changements);
 

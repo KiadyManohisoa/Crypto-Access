@@ -155,7 +155,7 @@ public class NavigationController {
         Utilisateur utilisateur = new Utilisateur();
         utilisateur.setGenre(new Genre());
         model.addAttribute("utilisateur", utilisateur);
-        return "pages/frontoffice/utilisateur/connection"; // Utilise home.html avec le layout
+        return "redirect:/"; // Utilise home.html avec le layout
     }
 
 }

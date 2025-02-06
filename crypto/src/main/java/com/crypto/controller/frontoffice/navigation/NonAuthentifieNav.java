@@ -27,7 +27,6 @@ public class NonAuthentifieNav {
         return "pages/choixConnect"; 
     }
 
-
     @GetMapping("/connection")
     public String connection(Model model ) {
 
