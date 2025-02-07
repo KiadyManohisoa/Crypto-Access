@@ -10,9 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.crypto.exception.model.ValeurInvalideException;
-import com.crypto.model.portefeuille.PorteFeuille;
-import com.crypto.model.portefeuille.PorteFeuilleDetails;
-import com.crypto.model.vente.Vente;
 
 public class Achat {
     private String id ;

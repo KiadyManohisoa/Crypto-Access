@@ -1,9 +1,6 @@
 package com.crypto.model.vente;
 
-import com.crypto.model.crypto.Cryptomonnaie;
-import com.crypto.model.portefeuille.PorteFeuille;
 import com.crypto.model.portefeuille.PorteFeuilleDetails;
-import com.crypto.model.utilisateur.Utilisateur;
 
 import java.sql.*;
 import java.util.ArrayList;

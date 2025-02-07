@@ -3,8 +3,6 @@ package com.crypto.model.portefeuille;
 import com.crypto.model.crypto.Cryptomonnaie;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class PorteFeuilleDetails {
     private String id;

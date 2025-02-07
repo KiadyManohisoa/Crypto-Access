@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.crypto.model.crypto.ChangementCoursCrypto;
-import com.crypto.model.crypto.Cryptomonnaie;
 import com.crypto.model.crypto.analyse.Analyseur;
 import com.crypto.service.connection.UtilDB;
 

@@ -44,48 +44,6 @@ public class Utilisateur {
     PorteFeuille porteFeuille;
     Fond fond;
 
-    public void vendre(Connection conn, PorteFeuilleDetails porteFeuilleDetail, int quantiteAvendre, LocalDateTime dateTransaction) throws QuantitéInsuffisanteException,Exception {
-        TransactionCrypto transactionCrypto = new TransactionCrypto();
-        try {
-            conn.setAutoCommit(false);
-            porteFeuilleDetail.getCryptomonnaie().setCommission(conn,dateTransaction);
-
-            transactionCrypto.setCryptomonnaie(porteFeuilleDetail.getCryptomonnaie());
-            transactionCrypto.setQuantite(porteFeuilleDetail.getQuantite(), quantiteAvendre);
-            transactionCrypto.setD_prixUnitaire(porteFeuilleDetail.getCryptomonnaie().getValeur());
-            transactionCrypto.setVendeur(this);
-            transactionCrypto.setD_commission();
-            if(dateTransaction!=null){
-                transactionCrypto.setDateTransaction(dateTransaction);
-            }else{
-                transactionCrypto.setDateTransaction(Util.getDateTimeActuelle().toLocalDateTime());
-            }
-            transactionCrypto.insert(conn);
-            porteFeuilleDetail.setQuantite(porteFeuilleDetail.getQuantite() - quantiteAvendre);
-            porteFeuilleDetail.update(conn);
-            MouvementFond mvtFond=new MouvementFond();
-            mvtFond.setDateMouvement(transactionCrypto.getDateTransaction());
-            double mtt = transactionCrypto.getCryptomonnaie().getValeur()*quantiteAvendre-(transactionCrypto.getD_commission());
-            mvtFond.setMontant(mtt);
-            mvtFond.setTransactionCrypto(transactionCrypto);
-            mvtFond.insert(conn,this);
-            double montantact=this.getFond().getMontant()+mvtFond.getMontant();
-            this.getFond().setMontant(montantact);
-
-            conn.commit();
-
-
-        } catch (Exception e) {
-            if (conn != null) {
-                conn.rollback();
-            }
-            throw e;
-        } finally {
-            conn.setAutoCommit(true);
-        }
-
-    }
-
     public double verifierFond(int quantite,double valeur,double commission) throws FondInsuffisantException{
         double total=quantite*valeur+(valeur*quantite*commission);
         if(this.getFond().getMontant()<total){
@@ -149,6 +107,7 @@ public class Utilisateur {
         }
     }
 
+
     public void checkValeurRetrait(MouvementFond mvtFond) throws Exception {
         if(this.getFond().getMontant() < (mvtFond.getMontant()*-1)) {
             throw new FondInsuffisantException("Fond insuffisant pour le retrait demandé");
@@ -184,7 +143,7 @@ public class Utilisateur {
     }
 
     public void setPorteFeuilleByConnection(Connection connection) {
-        String query = " SELECT p.*,u.nom, u.prenom, u.date_naissance, u.mail FROM portefeuille p INNER JOIN utilisateur u ON p.idUtilisateur = u.id WHERE u.id = ?";
+        String query = " SELECT p.*,u.* FROM portefeuille p INNER JOIN utilisateur u ON p.idUtilisateur = u.id WHERE u.id = ?";
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, this.getId());
@@ -347,6 +306,48 @@ public class Utilisateur {
         setMail(mail);
     }
 
+    public void vendre(Connection conn, PorteFeuilleDetails porteFeuilleDetail, int quantiteAvendre, LocalDateTime dateTransaction) throws QuantitéInsuffisanteException,Exception {
+        TransactionCrypto transactionCrypto = new TransactionCrypto();
+        try {
+            conn.setAutoCommit(false);
+            porteFeuilleDetail.getCryptomonnaie().setCommission(conn,dateTransaction);
+
+            transactionCrypto.setCryptomonnaie(porteFeuilleDetail.getCryptomonnaie());
+            transactionCrypto.setQuantite(porteFeuilleDetail.getQuantite(), quantiteAvendre);
+            transactionCrypto.setD_prixUnitaire(porteFeuilleDetail.getCryptomonnaie().getValeur());
+            transactionCrypto.setVendeur(this);
+            transactionCrypto.setD_commission();
+            if(dateTransaction!=null){
+                transactionCrypto.setDateTransaction(dateTransaction);
+            }else{
+                transactionCrypto.setDateTransaction(Util.getDateTimeActuelle().toLocalDateTime());
+            }
+            transactionCrypto.insert(conn);
+            porteFeuilleDetail.setQuantite(porteFeuilleDetail.getQuantite() - quantiteAvendre);
+            porteFeuilleDetail.update(conn);
+            MouvementFond mvtFond=new MouvementFond();
+            mvtFond.setDateMouvement(transactionCrypto.getDateTransaction());
+            double mtt = transactionCrypto.getCryptomonnaie().getValeur()*quantiteAvendre-(transactionCrypto.getD_commission());
+            mvtFond.setMontant(mtt);
+            mvtFond.setTransactionCrypto(transactionCrypto);
+            mvtFond.insert(conn,this);
+            double montantact=this.getFond().getMontant()+mvtFond.getMontant();
+            this.getFond().setMontant(montantact);
+
+            conn.commit();
+
+
+        } catch (Exception e) {
+            if (conn != null) {
+                conn.rollback();
+            }
+            throw e;
+        } finally {
+            conn.setAutoCommit(true);
+        }
+
+    }
+
     public static List<Utilisateur> getAll(Connection connection) throws SQLException {
         List<Utilisateur> utilisateurs = new ArrayList<>();
         String query = "SELECT * FROM utilisateur";
@@ -440,6 +441,55 @@ public class Utilisateur {
         }
         return null;
     }
+
+    public void ajouterFavori(Connection connection, Cryptomonnaie cryptomonnaie) throws Exception {
+
+        String query = "INSERT INTO cryptoFavori (idUtilisateur, idCryptomonnaie) VALUES ( ?, ?)";
+
+        try (PreparedStatement statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            statement.setString(1, getId());
+            statement.setString(2, cryptomonnaie.getId());
+           
+            statement.executeUpdate();
+        }
+    }
+
+    public void supprimerFavori(Connection connection, Cryptomonnaie cryptomonnaie) throws Exception {
+        String query = "DELETE FROM cryptofavori WHERE idUtilisateur = ? and idCryptomonnaie = ? ";
+
+        try (PreparedStatement statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            statement.setString(1, getId());
+            statement.setString(2, cryptomonnaie.getId());
+           
+            statement.executeUpdate();
+        }
+    }
+
+    public static void update(Connection connection, Utilisateur[] utilisateurs) throws Exception {
+        String query = "UPDATE utilisateur set lienimage = (?) where id = (?)";
+    
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+    
+            for (Utilisateur utilisateur : utilisateurs) {
+                statement.setString(1, utilisateur.getLienImage());
+                statement.setString(2, utilisateur.getId());
+    
+                System.out.println("Données: " + utilisateur.toString());
+    
+                statement.addBatch(); 
+            }
+    
+            int[] affectedRows = statement.executeBatch();    
+            for (int count : affectedRows) {
+                if (count == 0) {
+                    throw new SQLException("Échec de la mise à jour pour au moins un utilisateur.");
+                }
+            }
+        } catch (Exception err) {
+            throw err;
+        } 
+    }
+    
 
     @Override
     public String toString() {

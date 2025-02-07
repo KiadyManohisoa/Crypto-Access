@@ -18,12 +18,9 @@ import com.crypto.config.DonneesConfig;
 import com.crypto.model.crypto.ChangementCoursCrypto;
 import com.crypto.model.crypto.Cryptomonnaie;
 import com.crypto.model.crypto.analyse.Analyseur;
-import com.crypto.model.portefeuille.PorteFeuille;
 import com.crypto.model.portefeuille.PorteFeuilleDetails;
 import com.crypto.model.utilisateur.Genre;
 import com.crypto.model.utilisateur.Utilisateur;
-import com.crypto.model.vente.Vente;
-import com.crypto.service.AccessAPI;
 import com.crypto.service.connection.UtilDB;
 
 import jakarta.servlet.http.HttpSession;

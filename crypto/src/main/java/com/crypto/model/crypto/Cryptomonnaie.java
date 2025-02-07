@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.crypto.exception.model.ValeurInvalideException;
 import com.crypto.model.commission.Commission;
@@ -20,7 +22,7 @@ public class Cryptomonnaie {
     public void setCommission(Connection connection, LocalDateTime date) throws Exception{
         this.commission = Commission.getByIdCryptoAndDate(connection,this,date);
     }
-
+    
     // Getters et setters
 
     public Commission getCommission() {
@@ -202,8 +204,34 @@ public class Cryptomonnaie {
             connection.setAutoCommit(true); // Restaurer le mode auto-commit
         }
     }
+    
+    public ChangementCoursCrypto[] nouveauCours(Connection connection) throws Exception {
 
-    public static void updateBatch(Connection connection, Cryptomonnaie[] cryptomonnaies) throws Exception {
+        Cryptomonnaie[] cryptomonnaies = getAll(connection);
+        connection.setAutoCommit(false);
+        try {
+            for (Cryptomonnaie cryptomonnaie : cryptomonnaies) {
+                Donnees donnees = new Donnees(cryptomonnaie.getValeur());
+                cryptomonnaie.setValeur(donnees.genererValeurAleatoire());
+                // cryptomonnaie.setDate(Util.getDateHeureMaintenant());
+                // System.out.println("Données est "+donnees.toString());
+            }
+    
+            ChangementCoursCrypto[] changements = updateBatch(connection, cryptomonnaies);
+            connection.commit();
+            return changements ;
+            // System.out.println("Insérée");
+        } catch (Exception e) {
+            connection.rollback();
+            e.printStackTrace();
+            throw e ;
+        } finally{
+            connection.setAutoCommit(true);
+        }
+
+    }
+
+    public static ChangementCoursCrypto[] updateBatch(Connection connection, Cryptomonnaie[] cryptomonnaies) throws Exception {
         String query = "UPDATE cryptomonnaie SET d_valeur = ? WHERE id = ?";
         
         connection.setAutoCommit(false);
@@ -222,43 +250,21 @@ public class Cryptomonnaie {
                     throw new SQLException("Échec de la mise à jour pour au moins une cryptomonnaie.");
                 }
             }
-    
+            
+            List<ChangementCoursCrypto> listes = new ArrayList<>();
             for (Cryptomonnaie crypto : cryptomonnaies) {
                 ChangementCoursCrypto changement = new ChangementCoursCrypto(crypto);
                 changement.insererHistorique(connection);
+                listes.add(changement) ;
             }
             connection.commit(); 
+            return listes.toArray(new ChangementCoursCrypto[0]);
         } catch (Exception err) {
             connection.rollback(); 
             throw err;
         } finally {
             // connection.setAutoCommit(true); 
         }
-    }
-    
-    public void nouveauCours(Connection connection) throws Exception {
-
-        Cryptomonnaie[] cryptomonnaies = getAll(connection);
-        connection.setAutoCommit(false);
-        try {
-            for (Cryptomonnaie cryptomonnaie : cryptomonnaies) {
-                Donnees donnees = new Donnees(cryptomonnaie.getValeur());
-                cryptomonnaie.setValeur(donnees.genererValeurAleatoire());
-                // cryptomonnaie.setDate(Util.getDateHeureMaintenant());
-                // System.out.println("Données est "+donnees.toString());
-            }
-    
-            updateBatch(connection, cryptomonnaies);
-            connection.commit();
-            // System.out.println("Insérée");
-        } catch (Exception e) {
-            connection.rollback();
-            e.printStackTrace();
-            throw e ;
-        } finally{
-            connection.setAutoCommit(true);
-        }
-
     }
 
     @Override
