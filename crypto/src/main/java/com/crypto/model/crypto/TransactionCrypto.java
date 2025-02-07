@@ -1,15 +1,11 @@
 package com.crypto.model.crypto;
 
 import com.crypto.exception.vente.QuantitéInsuffisanteException;
-import com.crypto.model.crypto.Cryptomonnaie;
-import com.crypto.model.portefeuille.PorteFeuilleDetails;
 import com.crypto.model.utilisateur.Utilisateur;
-import com.crypto.service.util.Util;
 import lombok.NoArgsConstructor;
 
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @NoArgsConstructor
 public class TransactionCrypto {

@@ -35,6 +35,11 @@ public class NavigationController {
     @Autowired
     private UtilDB utilDB ;
 
+    @GetMapping("/demande/fond")
+    public String getFormDemandeFond() {
+        return "pages/frontoffice/fond/demande";
+    }
+
     @GetMapping("/form/analyse")
     public String getFormAnalyse(Model model) {
         try(Connection connection = utilDB.getConnection()) {

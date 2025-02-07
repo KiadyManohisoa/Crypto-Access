@@ -10,6 +10,11 @@ import java.time.ZoneId;
 
 public class Util {
 
+    public static Timestamp getDateTimeActuelle() {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        return Timestamp.valueOf(localDateTime);
+    }
+
     public static Timestamp formatDateTimeLocalToTimestamp(String date) throws Exception {
         Timestamp datyLera = null;
         try {

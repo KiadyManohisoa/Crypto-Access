@@ -9,7 +9,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.crypto.exception.fond.FondInsuffisantException;
 import com.crypto.exception.model.ValeurInvalideException;
+import com.crypto.model.fond.Fond;
+import com.crypto.model.fond.MouvementFond;
 import com.crypto.model.portefeuille.PorteFeuille;
 import com.crypto.model.transaction.Transaction;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -34,6 +37,37 @@ public class Utilisateur {
     String lienImage ;
     Transaction transaction;
     PorteFeuille porteFeuille;
+    Fond fond;
+
+    public void checkValeurRetrait(MouvementFond mvtFond) throws Exception {
+        if(this.getFond().getMontant() < (mvtFond.getMontant()*-1)) {
+            throw new FondInsuffisantException("Fond insuffisant pour le retrait demandé");
+        }
+    }
+
+    public void demandeActionFond(Connection co, MouvementFond fond) throws Exception {
+        try {
+            if(fond.estDepot()) {
+                fond.insererAttente(co, this);
+            }
+            else {
+                this.setFond(Fond.getFondByUtilisateur(this, co));
+                this.checkValeurRetrait(fond);
+                fond.insererAttente(co, this);
+            }
+        }
+        catch(Exception e) {
+            throw e;
+        }
+    }   
+
+    public Fond getFond() {
+        return fond;
+    }
+
+    public void setFond(Fond fond) {
+        this.fond = fond;
+    }
 
     public PorteFeuille getPorteFeuille() {
         return porteFeuille;
