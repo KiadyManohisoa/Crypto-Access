@@ -106,6 +106,11 @@ public class MouvementFond {
         else this.montant=montant;
     }
 
+    public void setMontantSansControl(double montant){
+
+        this.montant = montant ;
+    }
+
     public void setSigne(int signe) {
         this.montant = this.montant * signe;
     } 

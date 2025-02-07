@@ -63,7 +63,8 @@ public class Fond {
 
             try (ResultSet rs = statement.executeQuery()) { 
                 while (rs.next()) {
-                    MouvementFond mvt=new MouvementFond(rs.getString("id"), rs.getDouble("montant"), rs.getTimestamp("dateMouvement").toLocalDateTime(), null );
+                    MouvementFond mvt=new MouvementFond(rs.getString("id"), 0, rs.getTimestamp("dateMouvement").toLocalDateTime(), null );
+                    mvt.setMontantSansControl(rs.getDouble("montant"));
                     fond.ajouterMouvement(mvt);
                     fond.ajouterMontant(mvt.getMontant());
                 }

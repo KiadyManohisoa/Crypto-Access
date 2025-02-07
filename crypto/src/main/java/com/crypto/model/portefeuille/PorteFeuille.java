@@ -1,5 +1,6 @@
 package com.crypto.model.portefeuille;
 
+import com.crypto.model.crypto.Cryptomonnaie;
 import com.crypto.model.utilisateur.Utilisateur;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,6 +13,17 @@ public class PorteFeuille {
     private String id;
     private Utilisateur utilisateur;
     private List<PorteFeuilleDetails> porteFeuilleDetails;
+
+    public PorteFeuilleDetails verifier(Cryptomonnaie cryptomonnaie){
+        if(this.getPorteFeuilleDetails()!=null) {
+            for (PorteFeuilleDetails pt:this.getPorteFeuilleDetails()){
+                if(pt.getCryptomonnaie().getId().equals(cryptomonnaie.getId())){
+                    return pt;
+                }
+            }
+        }
+        return  null;
+    }
 
 
     public void setPorteFeuilleDetailsByConnection(Connection connection) throws Exception {
@@ -32,6 +44,7 @@ public class PorteFeuille {
         catch(Exception e) {
             throw e;
         }
+        this.setPorteFeuilleDetails(details);
     }
     
 

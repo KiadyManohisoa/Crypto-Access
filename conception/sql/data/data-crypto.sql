@@ -1,16 +1,16 @@
 -- Cryptomonnaie 
 
 INSERT INTO cryptomonnaie (id, d_valeur, nom, d_commission) VALUES
-('CRYPTO000000001', 42000.50, 'Bitcoin', 25),
-('CRYPTO000000002', 3000.75, 'Ethereum', 30),
-('CRYPTO000000003', 1.25, 'Cardano', 15),
-('CRYPTO000000004', 150.80, 'Solana', 20),
-('CRYPTO000000005', 0.10, 'Dogecoin', 5),
-('CRYPTO000000006', 0.50, 'Shiba Inu', 2),
-('CRYPTO000000007', 230.60, 'Polkadot', 18),
-('CRYPTO000000008', 130.20, 'Avalanche', 22),
-('CRYPTO000000009', 1.10, 'XRP', 12),
-('CRYPTO000000010', 25.75, 'Chainlink', 16);
+('CRYPTO000000001', 2000.00, 'Bitcoin', 25),
+('CRYPTO000000002', 1800.50, 'Ethereum', 30),
+('CRYPTO000000003', 750.25, 'Cardano', 15),
+('CRYPTO000000004', 1200.80, 'Solana', 20),
+('CRYPTO000000005', 500.10, 'Dogecoin', 5),
+('CRYPTO000000006', 505.50, 'Shiba Inu', 2),
+('CRYPTO000000007', 1350.60, 'Polkadot', 18),
+('CRYPTO000000008', 980.20, 'Avalanche', 22),
+('CRYPTO000000009', 600.75, 'XRP', 12),
+('CRYPTO000000010', 725.00, 'Chainlink', 16);
 
 
 -- Commission : 
@@ -26,3 +26,8 @@ INSERT INTO commission (pourcentage, dateChangement, idCryptomonnaie) VALUES
 (22.00, NOW(), 'CRYPTO000000008'),
 (12.00, NOW(), 'CRYPTO000000009'),
 (16.00, NOW(), 'CRYPTO000000010');
+
+INSERT INTO Utilisateur (mail, nom, prenom, date_naissance) VALUES ('kiadymahisoa@gmail.com', 'Andriamanantsilavo', 'Kiady Manohisoa', '2004-05-19');
+INSERT INTO Portefeuille (idUtilisateur) VALUES ('USR000000001');
+
+INSERT INTO fond (montant, dateMouvement, idUtilisateur) VALUES (5000, '2025-02-08 08:00:00', 'USR000000001');

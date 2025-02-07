@@ -8,19 +8,12 @@ import java.util.List;
 
 public class PorteFeuilleDetails {
     private String id;
-    private double quantite;
-    private PorteFeuille porteFeuille;
+    private int quantite;
     private Cryptomonnaie cryptomonnaie;
 
     public PorteFeuilleDetails() {
     }
 
-    public PorteFeuilleDetails(String id, double quantite, PorteFeuille porteFeuille, Cryptomonnaie cryptomonnaie) {
-        this.id = id;
-        this.quantite = quantite;
-        this.porteFeuille = porteFeuille;
-        this.cryptomonnaie = cryptomonnaie;
-    }
 
     public String getId() {
         return id;
@@ -30,20 +23,12 @@ public class PorteFeuilleDetails {
         this.id = id;
     }
 
-    public double getQuantite() {
+    public int getQuantite() {
         return quantite;
     }
 
-    public void setQuantite(double quantite) {
+    public void setQuantite(int quantite) {
         this.quantite = quantite;
-    }
-
-    public PorteFeuille getPorteFeuille() {
-        return porteFeuille;
-    }
-
-    public void setPorteFeuille(PorteFeuille porteFeuille) {
-        this.porteFeuille = porteFeuille;
     }
 
     public Cryptomonnaie getCryptomonnaie() {
@@ -54,47 +39,10 @@ public class PorteFeuilleDetails {
         this.cryptomonnaie = cryptomonnaie;
     }
 
-    // Fonction : Obtenir les détails par portefeuille
-    public static List<PorteFeuilleDetails> getPorteFeuilleDetailsByPorteFeuille(String idPortefeuille,Connection connection) throws SQLException {
-        List<PorteFeuilleDetails> details = new ArrayList<>();
-        String query = """
-                SELECT pd.id, pd.quantite, c.id AS cryptoId, c.nom, c.valeur
-                FROM portefeuille_detail pd
-                INNER JOIN LiaisonPorteFeuilleDetails l ON pd.id = l.id
-                INNER JOIN cryptomonnaie c ON pd.idCryptomonnaie = c.id
-                WHERE l.idPortefeuille = ?;
-                """;
 
-        try {
-             PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, idPortefeuille);
-            try (ResultSet rs = statement.executeQuery()) {
-                while (rs.next()) {
-                    Cryptomonnaie cryptomonnaie = new Cryptomonnaie(
-                            rs.getString("cryptoId"),
-                            rs.getString("nom"),
-                            rs.getDouble("valeur")
-                    );
-                    PorteFeuilleDetails detail = new PorteFeuilleDetails(
-                            rs.getString("id"),
-                            rs.getDouble("quantite"),
-                            null,
-                            cryptomonnaie
-                    );
-                    details.add(detail);
-                }
-            }
-        }
-        catch(Exception ex){
-            ex.printStackTrace();
-        }
-        return details;
-    }
-
-    // Fonction : Obtenir un détail par ID
     public static PorteFeuilleDetails getById(String id, Connection connection) throws SQLException {
         String query = """
-            SELECT pd.id, pd.quantite, c.id AS cryptoId, c.nom, c.valeur
+            SELECT pd.*, c.id AS cryptoId, c.*
             FROM portefeuille_detail pd
             INNER JOIN cryptomonnaie c ON pd.idCryptomonnaie = c.id
             WHERE pd.id = ?;
@@ -107,16 +55,15 @@ public class PorteFeuilleDetails {
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
                     Cryptomonnaie cryptomonnaie = new Cryptomonnaie(
-                            rs.getString("cryptoId"),
+                            rs.getString("cryptoid"),
                             rs.getString("nom"),
-                            rs.getDouble("valeur")
+                            rs.getDouble("d_valeur")
                     );
-                    detail = new PorteFeuilleDetails(
-                            rs.getString("id"),
-                            rs.getDouble("quantite"),
-                            null, // Remplacez par une valeur si nécessaire
-                            cryptomonnaie
-                    );
+                    detail = new PorteFeuilleDetails();
+                    detail.setId(rs.getString("id"));
+                    detail.setCryptomonnaie(cryptomonnaie);
+                    detail.setQuantite(rs.getInt("d_quantite"));
+
                 }
             }
         } catch (SQLException ex) {
@@ -125,45 +72,29 @@ public class PorteFeuilleDetails {
         }
         return detail;
     }
-    public static void updateQuantite(String id, double nouvelleQuantite, Connection connection) throws SQLException {
-        String query = """
-            UPDATE portefeuille_detail
-            SET quantite = ?
-            WHERE id = ?;
-            """;
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setDouble(1, nouvelleQuantite);
-            preparedStatement.setString(2, id);
-
-            int rowsUpdated = preparedStatement.executeUpdate();
-            if (rowsUpdated > 0) {
-                System.out.println("Quantité mise à jour avec succès pour l'id : " + id);
+    public PorteFeuilleDetails update(Connection connection) throws SQLException {
+        String query = "UPDATE portefeuille_detail SET d_quantite = ? WHERE id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, this.getQuantite());
+            statement.setString(2, this.getId());
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                return this;
             } else {
-                System.out.println("Aucun enregistrement trouvé pour l'id : " + id);
+                throw new SQLException("Aucune ligne n'a été mise à jour. L'ID spécifié n'existe pas.");
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw e;
         }
     }
 
-    public PorteFeuilleDetails update(Connection connection ) throws SQLException {
-        String query = "UPDATE portefeuilledetails SET quantite = ? WHERE id = ?  ";
-
-        connection.setAutoCommit(false);
-
-        try (PreparedStatement statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            statement.setDouble(1, this.getQuantite());
-            statement.setString(2, this.getId());
-
-            connection.commit();
-        } catch (SQLException e) {
-            connection.rollback();
-            throw e;
+    public void insert(Connection connection,PorteFeuille pt) throws SQLException {
+        String query = "INSERT INTO portefeuille_detail(id,d_quantite,idPortefeuille,idCryptomonnaie) VALUES(default,?,?,?)";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, this.getQuantite());
+            statement.setString(2, pt.getId());
+            statement.setString(3, this.getCryptomonnaie().getId());
+            int rowsAffected = statement.executeUpdate();
         }
-
-        return this;
     }
 
 }

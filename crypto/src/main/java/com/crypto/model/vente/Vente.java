@@ -102,57 +102,57 @@ public class Vente {
         }
     }
 
-       public static Vente getById(Connection connection, String idVente) throws SQLException {
-        String query = """
-        SELECT 
-          * 
-        FROM 
-            v_vente_utilisateur_detail
-        WHERE 
-            venteid = ?;
-        """;
+    //    public static Vente getById(Connection connection, String idVente) throws SQLException {
+    //     String query = """
+    //     SELECT 
+    //       * 
+    //     FROM 
+    //         v_vente_utilisateur_detail
+    //     WHERE 
+    //         venteid = ?;
+    //     """;
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, idVente);
+    //     try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+    //         preparedStatement.setString(1, idVente);
 
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    Vente vente = new Vente();
+    //         try (ResultSet resultSet = preparedStatement.executeQuery()) {
+    //             if (resultSet.next()) {
+    //                 Vente vente = new Vente();
 
-                    // Remplissage des champs de l'objet Vente
-                    vente.setId(resultSet.getString("venteId"));
-                    vente.setQuantiteVendu(resultSet.getInt("quantiteVendu"));
-                    vente.setDateVente(resultSet.getDate("dateVente"));
-                    vente.setD_prixVente(resultSet.getDouble("d_prixVente"));
+    //                 // Remplissage des champs de l'objet Vente
+    //                 vente.setId(resultSet.getString("venteId"));
+    //                 vente.setQuantiteVendu(resultSet.getInt("quantiteVendu"));
+    //                 vente.setDateVente(resultSet.getDate("dateVente"));
+    //                 vente.setD_prixVente(resultSet.getDouble("d_prixVente"));
 
-                    // Créer l'objet PorteFeuilleDetails et le lier à Vente
-                    PorteFeuilleDetails portefeuilleDetails = new PorteFeuilleDetails();
-                    portefeuilleDetails.setId(resultSet.getString("portefeuilleDetailId"));
-                    portefeuilleDetails.setQuantite(resultSet.getInt("quantite"));
+    //                 // Créer l'objet PorteFeuilleDetails et le lier à Vente
+    //                 PorteFeuilleDetails portefeuilleDetails = new PorteFeuilleDetails();
+    //                 portefeuilleDetails.setId(resultSet.getString("portefeuilleDetailId"));
+    //                 portefeuilleDetails.setQuantite(resultSet.getInt("quantite"));
 
-                    // Lier PorteFeuilleDetails à Vente
-                    vente.setPortefeuilleDetail(portefeuilleDetails);
+    //                 // Lier PorteFeuilleDetails à Vente
+    //                 vente.setPortefeuilleDetail(portefeuilleDetails);
 
-                    Utilisateur utilisateur = new Utilisateur();
-                    utilisateur.setNom(resultSet.getString("nom"));
-                    PorteFeuille pt=new PorteFeuille();
-                    pt.setUtilisateur(utilisateur);
-                    portefeuilleDetails.setPorteFeuille(pt);
+    //                 Utilisateur utilisateur = new Utilisateur();
+    //                 utilisateur.setNom(resultSet.getString("nom"));
+    //                 PorteFeuille pt=new PorteFeuille();
+    //                 pt.setUtilisateur(utilisateur);
+    //                 portefeuilleDetails.setPorteFeuille(pt);
 
-                    Cryptomonnaie cryptomonnaie = new Cryptomonnaie();
-                    cryptomonnaie.setValeur(resultSet.getDouble("valeur"));
+    //                 Cryptomonnaie cryptomonnaie = new Cryptomonnaie();
+    //                 cryptomonnaie.setValeur(resultSet.getDouble("valeur"));
 
-                    portefeuilleDetails.setCryptomonnaie(cryptomonnaie);
-                    vente.setPortefeuilleDetail(portefeuilleDetails);
-                    return vente;
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw e;
-        }
+    //                 portefeuilleDetails.setCryptomonnaie(cryptomonnaie);
+    //                 vente.setPortefeuilleDetail(portefeuilleDetails);
+    //                 return vente;
+    //             }
+    //         }
+    //     } catch (SQLException e) {
+    //         e.printStackTrace();
+    //         throw e;
+    //     }
 
-        return null;
-    }
+    //     return null;
+    // }
 
 }
