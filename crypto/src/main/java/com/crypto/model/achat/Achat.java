@@ -10,9 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.crypto.exception.model.ValeurInvalideException;
-import com.crypto.model.portefeuille.PorteFeuille;
-import com.crypto.model.portefeuille.PorteFeuilleDetails;
-import com.crypto.model.vente.Vente;
 
 public class Achat {
     private String id ;
@@ -157,27 +154,27 @@ public class Achat {
        return null;
     }
 
-    public void modifierPorteFeuille(Connection connection) throws Exception{
-        Vente vente = Vente.getById(connection, getIdVente());
+    // public void modifierPorteFeuille(Connection connection) throws Exception{
+    //     Vente vente = Vente.getById(connection, getIdVente());
 
-        PorteFeuille porteFeuille = PorteFeuille.getByIdUtilisateur(getIdAcheteur() , connection);
-        assert porteFeuille != null;
+    //     PorteFeuille porteFeuille = PorteFeuille.getByIdUtilisateur(getIdAcheteur() , connection);
+    //     assert porteFeuille != null;
 
-        List<PorteFeuilleDetails> details = PorteFeuilleDetails.getPorteFeuilleDetailsByPorteFeuille(porteFeuille.getId() , connection);
-        PorteFeuilleDetails detailAcheteur = new PorteFeuilleDetails();
-        for (PorteFeuilleDetails detail : details) {
-            if(detail.getId().equals(vente.getPortefeuilleDetail().getId())) {
-                detailAcheteur = detail;
-                break;
-            }
-        }
-        PorteFeuilleDetails detailVendeur =vente.getPortefeuilleDetail();
+    //     List<PorteFeuilleDetails> details = PorteFeuilleDetails.getPorteFeuilleDetailsByPorteFeuille(porteFeuille.getId() , connection);
+    //     PorteFeuilleDetails detailAcheteur = new PorteFeuilleDetails();
+    //     for (PorteFeuilleDetails detail : details) {
+    //         if(detail.getId().equals(vente.getPortefeuilleDetail().getId())) {
+    //             detailAcheteur = detail;
+    //             break;
+    //         }
+    //     }
+    //     PorteFeuilleDetails detailVendeur =vente.getPortefeuilleDetail();
 
-        detailAcheteur.setQuantite(detailAcheteur.getQuantite()+(getQuantityAchat()) );
-        detailVendeur.setQuantite(detailVendeur.getQuantite()-(getQuantityAchat()) );
+    //     detailAcheteur.setQuantite(detailAcheteur.getQuantite()+(getQuantityAchat()) );
+    //     detailVendeur.setQuantite(detailVendeur.getQuantite()-(getQuantityAchat()) );
 
-        detailVendeur.update(connection);
-        detailAcheteur.update(connection);
-        // System.out.println(detailAcheteur.getQuantite());
-    }
+    //     detailVendeur.update(connection);
+    //     detailAcheteur.update(connection);
+    //     // System.out.println(detailAcheteur.getQuantite());
+    // }
 }

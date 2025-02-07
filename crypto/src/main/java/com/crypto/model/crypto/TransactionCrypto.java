@@ -1,15 +1,11 @@
 package com.crypto.model.crypto;
 
 import com.crypto.exception.vente.QuantitéInsuffisanteException;
-import com.crypto.model.crypto.Cryptomonnaie;
-import com.crypto.model.portefeuille.PorteFeuilleDetails;
 import com.crypto.model.utilisateur.Utilisateur;
-import com.crypto.service.util.Util;
 import lombok.NoArgsConstructor;
 
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @NoArgsConstructor
 public class TransactionCrypto {
@@ -47,7 +43,7 @@ public class TransactionCrypto {
         if(quantite >= quantiteAvendre){
             this.quantite = quantiteAvendre;
         }else {
-            throw new QuantitéInsuffisanteException("Quantite Insuffisant");
+            throw new QuantitéInsuffisanteException("Quantite insuffisante pour effectuer la vente");
         }
     }
     public void setQuantite(int quantite) {
@@ -70,7 +66,7 @@ public class TransactionCrypto {
     }
 
     public void setD_commission() {
-        this.d_commission = this.getCryptomonnaie().getValeur()*(this.getCryptomonnaie().getCommission().getPourcentage()/100);
+        this.d_commission = this.getCryptomonnaie().getValeur()*(this.getCryptomonnaie().getCommission().getPourcentage()/100)*this.getQuantite();
     }
 
     public Cryptomonnaie getCryptomonnaie() {

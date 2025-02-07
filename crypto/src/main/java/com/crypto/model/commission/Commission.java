@@ -32,6 +32,9 @@ public class Commission {
     public double getPourcentage() {
         return pourcentage;
     }
+    public double getPourcentageSansPourcentage() {
+        return pourcentage/100;
+    }
 
     public void setPourcentage(double pourcentage) {
         this.pourcentage = pourcentage;

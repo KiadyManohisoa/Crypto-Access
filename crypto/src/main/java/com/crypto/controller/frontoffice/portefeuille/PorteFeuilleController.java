@@ -20,40 +20,40 @@ public class PorteFeuilleController {
     @Autowired
     private UtilDB utilDB ;
 
-    @GetMapping("/portefeuille/vendre")
-    public String vendre(
-            RedirectAttributes redirectAttributes,
-            @RequestParam("quantity") int quantity,
-            @RequestParam("idportefeuilledetail") String idportefeuilledetail) {
+    // @GetMapping("/portefeuille/vendre")
+    // public String vendre(
+    //         RedirectAttributes redirectAttributes,
+    //         @RequestParam("quantity") int quantity,
+    //         @RequestParam("idportefeuilledetail") String idportefeuilledetail) {
 
-        try {
-            Connection connection = utilDB.getConnection();
-            PorteFeuilleDetails portefeuilleDetail = PorteFeuilleDetails.getById(idportefeuilledetail, connection);
+    //     try {
+    //         Connection connection = utilDB.getConnection();
+    //         PorteFeuilleDetails portefeuilleDetail = PorteFeuilleDetails.getById(idportefeuilledetail, connection);
 
-            if (portefeuilleDetail.getQuantite() >= quantity) {
-                Vente vente = new Vente();
-                vente.setQuantiteVendu(quantity);
-                // vente.setDateVente(Date.valueOf("2025-01-10"));
-                vente.setDateVente(Util.getDateActuelle());
-                vente.setD_prixVente(portefeuilleDetail.getCryptomonnaie().getValeur());
-                vente.setPortefeuilleDetail(portefeuilleDetail);
+    //         if (portefeuilleDetail.getQuantite() >= quantity) {
+    //             Vente vente = new Vente();
+    //             vente.setQuantiteVendu(quantity);
+    //             // vente.setDateVente(Date.valueOf("2025-01-10"));
+    //             vente.setDateVente(Util.getDateActuelle());
+    //             vente.setD_prixVente(portefeuilleDetail.getCryptomonnaie().getValeur());
+    //             vente.setPortefeuilleDetail(portefeuilleDetail);
 
-                Vente.insert(vente, connection);
-                PorteFeuilleDetails.updateQuantite(
-                        portefeuilleDetail.getId(),
-                        portefeuilleDetail.getQuantite() - quantity,
-                        connection
-                );
+    //             Vente.insert(vente, connection);
+    //             PorteFeuilleDetails.updateQuantite(
+    //                     portefeuilleDetail.getId(),
+    //                     portefeuilleDetail.getQuantite() - quantity,
+    //                     connection
+    //             );
 
-                redirectAttributes.addFlashAttribute("message", "Vente effectuée avec succès !");
-            } else {
-                redirectAttributes.addFlashAttribute("message", "Quantité insuffisante.");
-            }
-        } catch (Exception err) {
-            redirectAttributes.addFlashAttribute("message", "Erreur : " + err.getMessage());
-        }
+    //             redirectAttributes.addFlashAttribute("message", "Vente effectuée avec succès !");
+    //         } else {
+    //             redirectAttributes.addFlashAttribute("message", "Quantité insuffisante.");
+    //         }
+    //     } catch (Exception err) {
+    //         redirectAttributes.addFlashAttribute("message", "Erreur : " + err.getMessage());
+    //     }
 
-        return "redirect:/portefeuille";
-    }
+    //     return "redirect:/portefeuille";
+    // }
 
 }

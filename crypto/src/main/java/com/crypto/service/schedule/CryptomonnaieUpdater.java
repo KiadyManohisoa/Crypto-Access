@@ -14,6 +14,7 @@ import com.crypto.config.DonneesConfig;
 import com.crypto.model.crypto.ChangementCoursCrypto;
 import com.crypto.model.crypto.Cryptomonnaie;
 import com.crypto.service.connection.UtilDB;
+import com.crypto.service.firebase.FirestoreCryptomonnaie;
 import com.crypto.service.schedule.socket.CoursHandler;
 import com.crypto.service.util.Wrapper;
 
@@ -26,12 +27,19 @@ public class CryptomonnaieUpdater {
     @Autowired
     private CoursHandler coursHandler;
 
+    @Autowired
+    FirestoreCryptomonnaie firestoreCryptomonnaie ;
+
     @Scheduled(fixedRate = DonneesConfig.FREQUENCE_CHANGEMENT) // Toutes les 10 secondes
     public void changerCours() throws Exception{
 
         Cryptomonnaie cryptomonnaie = new Cryptomonnaie();
         try(Connection connection = utilDB.getConnection()){
-            cryptomonnaie.nouveauCours(connection);
+            ChangementCoursCrypto[] changementCoursCryptos = cryptomonnaie.nouveauCours(utilDB.getConnection());
+
+            firestoreCryptomonnaie.setCryptomonnaies(changementCoursCryptos);
+            firestoreCryptomonnaie.synchroniser();
+            
             coursHandler.signal(donnerChangementCours(connection));
         } catch(Exception err) {
             throw err ;

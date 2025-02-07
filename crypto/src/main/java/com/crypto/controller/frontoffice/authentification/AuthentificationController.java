@@ -16,6 +16,7 @@ import com.crypto.model.reponse.JsonResponse;
 import com.crypto.model.utilisateur.Utilisateur;
 import com.crypto.service.AccessAPI;
 import com.crypto.service.connection.UtilDB;
+import com.crypto.service.firebase.FirestoreUtilisateur;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -29,6 +30,8 @@ public class AuthentificationController {
     @Autowired 
     UtilDB utilDB ;
 
+    @Autowired 
+    FirestoreUtilisateur firestoreUtilisateur ; 
 
     @PostMapping("/connection")
     public String connection(@ModelAttribute Utilisateur utilisateur, RedirectAttributes redirectAttributes, Model model) {
@@ -103,6 +106,9 @@ public class AuthentificationController {
             if(jsonResponse.getError()==null && jsonResponse.getCode()==200){
                 utilisateur.insert(utilDB.getConnection());
                 session.setAttribute("utilisateur", utilisateur);
+                
+                firestoreUtilisateur.setUtilisateur(utilisateur);
+                firestoreUtilisateur.synchroniser();
                 cheminRedirection = "redirect:/connection";
                 redirectAttributes.addFlashAttribute("message", "Inscription réussie");
             } else redirectAttributes.addFlashAttribute("message", jsonResponse.getError());

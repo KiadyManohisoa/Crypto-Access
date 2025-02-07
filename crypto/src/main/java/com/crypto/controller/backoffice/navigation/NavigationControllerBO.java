@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.crypto.model.commission.analyse.Analyseur;
 import com.crypto.model.crypto.Cryptomonnaie;
 import com.crypto.model.crypto.analyse.TypeAnalyse;
-import com.crypto.model.utilisateur.Genre;
-import com.crypto.model.utilisateur.Utilisateur;
 import com.crypto.service.connection.UtilDB;
 
 import jakarta.servlet.http.HttpSession;

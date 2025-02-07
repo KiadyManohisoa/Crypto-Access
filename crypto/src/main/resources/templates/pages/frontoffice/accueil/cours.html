@@ -42,7 +42,7 @@
                           <tr th:each="crypto : ${cryptomonnaies}">
                             <td th:text="${crypto.cryptomonnaie.nom}">Nom de la crypto</td>
                             <td th:text="${crypto.valeur}">Valeur de la crypto</td>
-                            <td><a th:href="@{/coursDetail(id=${crypto.cryptomonnaie.id})}">Visualiser l'évolution ?</a></td>
+                            <td><a th:href="@{/crypto/coursDetail(id=${crypto.cryptomonnaie.id})}">Visualiser l'évolution ?</a></td>
                           </tr>
                          
                           

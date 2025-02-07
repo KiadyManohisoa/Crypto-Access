@@ -18,12 +18,9 @@ import com.crypto.config.DonneesConfig;
 import com.crypto.model.crypto.ChangementCoursCrypto;
 import com.crypto.model.crypto.Cryptomonnaie;
 import com.crypto.model.crypto.analyse.Analyseur;
-import com.crypto.model.portefeuille.PorteFeuille;
 import com.crypto.model.portefeuille.PorteFeuilleDetails;
 import com.crypto.model.utilisateur.Genre;
 import com.crypto.model.utilisateur.Utilisateur;
-import com.crypto.model.vente.Vente;
-import com.crypto.service.AccessAPI;
 import com.crypto.service.connection.UtilDB;
 
 import jakarta.servlet.http.HttpSession;
@@ -34,6 +31,45 @@ public class NavigationController {
        
     @Autowired
     private UtilDB utilDB ;
+
+    
+    @GetMapping("/vente")
+    public String vente(Model model, HttpSession session) {
+        // String idUtilisateur = ((Utilisateur)session.getAttribute("utilisateur")).getId();
+        String idUtilisateur = "USR000000001";
+
+        try {
+            Connection conn=utilDB.getConnection();
+            Utilisateur u=new Utilisateur();
+            u.setId(idUtilisateur);
+            u.setPorteFeuilleByConnection(conn);
+            List<PorteFeuilleDetails> porteFeuilleDetails = u.getPorteFeuille().getPorteFeuilleDetails();
+            System.out.println("\n Longueur portefeuilleDétails : "+porteFeuilleDetails.size()+" \n");
+            model.addAttribute("details", porteFeuilleDetails);
+        } catch (Exception err) {
+            model.addAttribute("message", "Erreur : " + err.getMessage());
+        }
+
+        return "pages/frontoffice/accueil/vente"; 
+    }
+    
+
+    @GetMapping("/achat")
+    public String achat(Model model) {
+        try(Connection connection = utilDB.getConnection()) {
+            Cryptomonnaie[] ltcrypto=Cryptomonnaie.getAll(connection);
+            model.addAttribute("cryptomonnaies",ltcrypto);
+        } catch (Exception err) {
+            err.printStackTrace();
+            model.addAttribute("message", err.getMessage());
+        }
+        return "pages/frontoffice/accueil/achat";
+    }
+
+    @GetMapping("/demande/fond")
+    public String getFormDemandeFond() {
+        return "pages/frontoffice/fond/demande";
+    }
 
     @GetMapping("/form/analyse")
     public String getFormAnalyse(Model model) {
@@ -101,53 +137,34 @@ public class NavigationController {
         return "pages/frontoffice/accueil/coursDetail"; // Utilise home.html avec le layout
     }
 
-    @GetMapping("/detailVente")
-    public String detailVente(@RequestParam("idVente") String idVente, Model model) {
-
-        try {
-            Connection connection = utilDB.getConnection();
-            Vente vente=Vente.getById(connection, idVente);
-            model.addAttribute("vente", vente);
-            System.out.println("Vente effectuée ");
-
+    @GetMapping("/detailCrypto")
+    public String detailCrypto(@RequestParam("idCrypto") String idCryptomonnaie, Model model) {
+        try(Connection connection = utilDB.getConnection()) {
+            Cryptomonnaie spesCrypto = Cryptomonnaie.getById(connection, idCryptomonnaie);
+            model.addAttribute("theCrypto", spesCrypto);
         } catch (Exception err) { 
-
             model.addAttribute("message", err.getMessage());
-            System.err.println("Erreur lors de la récupération des données : " + err.getMessage());
             err.printStackTrace();
         }
-        return "pages/frontoffice/accueil/detailVente"; // Utilise home.html avec le layout
+        return "pages/frontoffice/accueil/detailAchat";
     }
 
-    @GetMapping("/vente")
-    public String vente(Model model) {
-        // model.addAttribute("ventes", Achat.findAll(utilDB.getConnection()));
-        try {
-            List<Vente> listeVente=Vente.getVenteDisponible(utilDB.getConnection());
-            model.addAttribute("listeVente", listeVente);
-        } catch (Exception err) {
-            System.err.println("Erreur lors de la récupération des données : " + err.getMessage());
-            err.printStackTrace();
-        }
-        return "pages/frontoffice/accueil/vente"; // Utilise home.html avec le layout
-    }
+    // @GetMapping("/portefeuille")
+    // public String portefeuille(Model model, HttpSession session) {
+    //     String idUtilisateur = ((Utilisateur)session.getAttribute("utilisateur")).getId();
+    //     try {
+    //         PorteFeuille portefeuille = PorteFeuille.getByIdUtilisateur(idUtilisateur, utilDB.getConnection());
+    //         List<PorteFeuilleDetails> details = PorteFeuilleDetails.getPorteFeuilleDetailsByPorteFeuille(
+    //                 portefeuille.getId(),
+    //                 utilDB.getConnection()
+    //         );
+    //         model.addAttribute("details", details);
+    //     } catch (Exception err) {
+    //         model.addAttribute("message", "Erreur lors de la récupération des données : " + err.getMessage());
+    //     }
 
-    @GetMapping("/portefeuille")
-    public String portefeuille(Model model, HttpSession session) {
-        String idUtilisateur = ((Utilisateur)session.getAttribute("utilisateur")).getId();
-        try {
-            PorteFeuille portefeuille = PorteFeuille.getByIdUtilisateur(idUtilisateur, utilDB.getConnection());
-            List<PorteFeuilleDetails> details = PorteFeuilleDetails.getPorteFeuilleDetailsByPorteFeuille(
-                    portefeuille.getId(),
-                    utilDB.getConnection()
-            );
-            model.addAttribute("details", details);
-        } catch (Exception err) {
-            model.addAttribute("message", "Erreur lors de la récupération des données : " + err.getMessage());
-        }
-
-        return "pages/frontoffice/accueil/portefeuille"; // Utilise le fichier portefeuille.html
-    }
+    //     return "pages/frontoffice/accueil/portefeuille"; // Utilise le fichier portefeuille.html
+    // }
 
     @GetMapping("/deconnection")
     public String deconnection(HttpSession session, Model model) {

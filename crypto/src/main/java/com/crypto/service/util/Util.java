@@ -1,7 +1,6 @@
 package com.crypto.service.util;
 
 import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -9,6 +8,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 public class Util {
+
+    public static Timestamp getDateTimeActuelle() {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        return Timestamp.valueOf(localDateTime);
+    }
 
     public static Timestamp formatDateTimeLocalToTimestamp(String date) throws Exception {
         Timestamp datyLera = null;
