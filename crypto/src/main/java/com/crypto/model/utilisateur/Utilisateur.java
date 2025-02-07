@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+import com.crypto.exception.achat.FondInsuffisantException;
 import com.crypto.exception.model.ValeurInvalideException;
 import com.crypto.exception.vente.QuantitéInsuffisanteException;
 import com.crypto.model.commission.Commission;
@@ -310,11 +311,20 @@ public class Utilisateur {
         }
         return null;
     }
+    public double verifierFond(int quantite,double valeur,double commission) throws FondInsuffisantException{
+        double total=quantite*valeur+(valeur*quantite*commission);
+        if(this.getFond().getMontant()<total){
+         throw new FondInsuffisantException("Fond insuffisant");
+        }
+        return total;
+    }
     public void acheter(Connection conn, Cryptomonnaie cryptomonnaie, int quantiteACheter, LocalDateTime dateTransaction) throws QuantitéInsuffisanteException,Exception {
         TransactionCrypto transactionCrypto = new TransactionCrypto();
         try {
             conn.setAutoCommit(false);
             cryptomonnaie.setCommission(conn,dateTransaction);
+            double total=verifierFond(quantiteACheter,cryptomonnaie.getValeur(),cryptomonnaie.getCommission().getPourcentage());
+            double montantact=this.getFond().getMontant()- total;
             transactionCrypto.setCryptomonnaie(cryptomonnaie);
             transactionCrypto.setQuantite(quantiteACheter);
             transactionCrypto.setD_prixUnitaire(cryptomonnaie.getValeur());
@@ -342,7 +352,6 @@ public class Utilisateur {
             mvtFond.setMontant(transactionCrypto.getCryptomonnaie().getValeur()+(transactionCrypto.getCryptomonnaie().getValeur()*transactionCrypto.getD_commission())*quantiteACheter);
             mvtFond.setTransactionCrypto(transactionCrypto);
             mvtFond.insert(conn,this);
-            double montantact=this.getFond().getMontant()- mvtFond.getMontant();
             this.getFond().setMontant(montantact);
             conn.commit();
 
