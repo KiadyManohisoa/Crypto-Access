@@ -54,11 +54,11 @@ public class Resultat {
         List<Resultat> resultats=new ArrayList<>();
         List<Utilisateur> listeU=Utilisateur.getAll(c);
         System.out.println("utilisateur"+listeU.size());
-        Resultat res=new Resultat();
         if(dateMax==null) {
             dateMax = LocalDateTime.now();
         }
-        for (Utilisateur u:listeU){
+        for (Utilisateur u:listeU) {
+            Resultat res=new Resultat();
             u.setTransaction(c,dateMax);
             u.setPorteFeuilleByConnection(c);
             res.setU(u);

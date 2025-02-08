@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page de cours</title>
+    <title></title>
 </head>
 <body>
     <!-- Remplacer le fragment content par le contenu spécifique de cette page -->
@@ -14,7 +14,7 @@
           <h1>Cours de tous les cryptomonnaies</h1>
           <nav>
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a th:href="@{/accueil}">Accueil</a></li>
+              <li class="breadcrumb-item"><a th:href="@{/crypto/accueil}">Accueil</a></li>
               <li class="breadcrumb-item">Cours</li>
             </ol>
           </nav>
@@ -41,7 +41,7 @@
 
                           <tr th:each="crypto : ${cryptomonnaies}">
                             <td th:text="${crypto.cryptomonnaie.nom}">Nom de la crypto</td>
-                            <td th:text="${crypto.valeur}">Valeur de la crypto</td>
+                            <td th:text="${crypto.valeur} + ' $'">Valeur de la crypto</td>
                             <td><a th:href="@{/crypto/coursDetail(id=${crypto.cryptomonnaie.id})}">Visualiser l'évolution ?</a></td>
                           </tr>
                          

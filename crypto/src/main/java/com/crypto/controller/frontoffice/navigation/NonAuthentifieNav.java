@@ -32,6 +32,8 @@ public class NonAuthentifieNav {
 
         Utilisateur utilisateur = new Utilisateur() ;
         utilisateur.setGenre(new Genre());
+        utilisateur.setMail("leadupuis@gmail.com");
+        utilisateur.setMdp("Lea15031992");
         model.addAttribute("utilisateur", utilisateur); 
         return "pages/frontoffice/utilisateur/connection"; // Utilise home.html avec le layout
     }

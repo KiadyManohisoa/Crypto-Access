@@ -78,7 +78,7 @@ public class Achat {
         this.idVente = idVente;
     }
     public Achat insert(Connection connection) throws Exception {
-        String query = "INSERT INTO Achat (id, quantiteAchat, dateAchat, idacheteur, idvente) " +
+        String query = "INSERT INTO Achat (id, quantiteachat, dateachat, idacheteur, idvente) " +
                 "VALUES (DEFAULT, ?, ?, ?, ?)";
 
                 System.out.println(getIdVente());
@@ -123,7 +123,7 @@ public class Achat {
             while (rs.next()) {
                 Achat achat = new Achat(
                         rs.getString("id") ,
-                        rs.getInt("quantiteAchat"),
+                        rs.getInt("quantiteachat"),
                         rs.getDate("dateachat"),
                         rs.getString("idacheteur"),
                         rs.getString("idvente")
@@ -142,7 +142,7 @@ public class Achat {
                  while (rs.next()) {
                      Achat achat = new Achat(
                              rs.getString("id"),
-                             rs.getInt("quantiteAchat"),
+                             rs.getInt("quantiteachat"),
                              rs.getDate("dateachat"),
                              rs.getString("idacheteur"),
                              rs.getString("idvente")

@@ -9,11 +9,12 @@ public class AuthentificationInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        // if (request.getSession(false) == null || request.getSession().getAttribute("utilisateur") == null) {
-        //     response.sendRedirect("/connection"); // Redirige vers la page de connexion
-        //     return false;
-        // }
+        if (request.getSession(false) == null) {
+            response.sendRedirect("/"); 
+            return false;
+        }
         return true;
     }
+
 }
 

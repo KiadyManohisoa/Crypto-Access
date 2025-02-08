@@ -18,6 +18,7 @@ import com.crypto.config.DonneesConfig;
 import com.crypto.model.crypto.ChangementCoursCrypto;
 import com.crypto.model.crypto.Cryptomonnaie;
 import com.crypto.model.crypto.analyse.Analyseur;
+import com.crypto.model.fond.Fond;
 import com.crypto.model.portefeuille.PorteFeuilleDetails;
 import com.crypto.model.transaction.Transaction;
 import com.crypto.model.utilisateur.Genre;
@@ -52,15 +53,16 @@ public class NavigationController {
     
     @GetMapping("/vente")
     public String vente(Model model, HttpSession session) {
-        // String idUtilisateur = ((Utilisateur)session.getAttribute("utilisateur")).getId();
-        String idUtilisateur = "USR000000001";
+        String idUtilisateur = ((Utilisateur)session.getAttribute("utilisateur")).getId();
+        // String idUtilisateur = DonneesConfig.tempIdUtilisateur;
 
         try(Connection conn = utilDB.getConnection()) {
             Utilisateur u=new Utilisateur();
             u.setId(idUtilisateur);
             u.setPorteFeuilleByConnection(conn);
             List<PorteFeuilleDetails> porteFeuilleDetails = u.getPorteFeuille().getPorteFeuilleDetails();
-            System.out.println("\n Longueur portefeuilleDétails : "+porteFeuilleDetails.size()+" \n");
+            u.setFond(Fond.getFondByUtilisateur(u, conn));
+            model.addAttribute("fond", u.getFond());
             model.addAttribute("details", porteFeuilleDetails);
         } catch (Exception err) {
             model.addAttribute("message", "Erreur : " + err.getMessage());

@@ -10,14 +10,12 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Transaction;
 
-import com.crypto.model.crypto.ChangementCoursCrypto;
 import com.crypto.model.crypto.Cryptomonnaie;
 import com.crypto.model.crypto.TransactionCrypto;
 import com.crypto.model.crypto.analyse.TypeAnalyse;
-import com.crypto.model.crypto.analyse.type.Max;
-import com.crypto.model.crypto.analyse.type.PremierQuartile;
+import com.crypto.model.crypto.analyse.type.Somme;
+import com.crypto.model.crypto.analyse.type.Moyenne;
 
 public class Analyseur {
  
@@ -26,8 +24,8 @@ public class Analyseur {
     Cryptomonnaie cryptomonnaie;
     int idTypeAnalyse;
     public static final TypeAnalyse [] typesAnalyses = { 
-        new PremierQuartile("1","Somme"),
-        new Max("2","Moyenne")
+        new Somme("1","Somme"),
+        new Moyenne("2","Moyenne")
     }; 
 
     public Analyseur(String idTypeAnalyse, String dateHeureMin, String dateHeureMax, String idCrypto) throws Exception {

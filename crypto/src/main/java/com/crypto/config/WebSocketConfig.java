@@ -13,7 +13,6 @@ import com.crypto.service.schedule.socket.CoursHandler;
 public class WebSocketConfig implements WebSocketConfigurer {
 
     private final CoursHandler coursHandler;
-   
     
     public WebSocketConfig(CoursHandler coursHandler) {
         this.coursHandler = coursHandler;

@@ -16,10 +16,10 @@
             <h1>Section Achat</h1>
             <nav>
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="accueil.html">Accueil</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/crypto/accueil}">Accueil</a></li>
                     <li class="breadcrumb-item"> <a href="#"> Cryptomonnaie </a> </li>
                     <li class="breadcrumb-item"> <a href="#"> Achat </a> </li>
-                <li class="breadcrumb-item">Detail</li>
+                    <li class="breadcrumb-item">Detail</li>
                 </ol>
             </nav>
         </div>
@@ -54,7 +54,7 @@
                                         <input type="datetime-local" id="dateAchat" name="dateAchat" class="form-control">
                                     </div>
                                     <div class="col-6 text-end">
-                                        <h5>Prix unitaire : <span class="text-success" th:text="${theCrypto.valeur}"></span></h5>
+                                        <h5>Prix unitaire : <span class="text-success" th:text="${theCrypto.valeur} + ' $'"></span></h5>
                                     </div>
                                 </div>
 

@@ -100,19 +100,22 @@ public class Transaction {
     public void setAchat(List<TransactionCrypto> achat) {
         this.achat = achat;
     }
+
     public static Transaction getTransactionByUtilisateur(Utilisateur u, Connection connection,LocalDateTime dateMax){
         List<TransactionCrypto> achats  = new ArrayList<>();
         List<TransactionCrypto> ventes  = new ArrayList<>();
-        TransactionCrypto transactionCrypto=new TransactionCrypto();
         Transaction rep=new Transaction();
         String idAcheteur="";
         String idVendeur="";
-        String query = "SELECT * FROM transactionCrypto WHERE dateTransaction <= ?";
+        String query = "SELECT * FROM transactionCrypto WHERE dateTransaction <= (?) AND (idVendeur = (?) OR idAcheteur=(?))";
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setTimestamp(1,Timestamp.valueOf(dateMax));
+            statement.setString(2, u.getId());
+            statement.setString(3, u.getId());
             try (ResultSet rs = statement.executeQuery()) {
                 while (rs.next()) {
+                    TransactionCrypto transactionCrypto=new TransactionCrypto();
                     transactionCrypto.setId(rs.getString("id"));
                     transactionCrypto.setDateTransaction(rs.getTimestamp("dateTransaction").toLocalDateTime());
                     transactionCrypto.setQuantite(rs.getInt("quantite"));

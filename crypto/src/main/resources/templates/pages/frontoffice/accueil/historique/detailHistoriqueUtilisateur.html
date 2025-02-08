@@ -70,8 +70,8 @@
                                     <tr th:each="vt : ${transaction.vente}">
                                         <td th:text="${vt.cryptomonnaie.nom}"></td>
                                         <td th:text="${vt.quantite}"></td>
-                                        <td th:text="${vt.d_prixUnitaire}"></td>
-                                        <td th:text="${vt.d_commission}"></td>
+                                        <td th:text="${vt.d_prixUnitaire} + ' $'"></td>
+                                        <td th:text="${vt.d_commission} + ' $'"></td>
                                         <td th:text="${#temporals.format(vt.dateTransaction, 'yyyy-MM-dd HH:mm:ss')}"></td>
                                     </tr>
                                 </tbody>
@@ -99,8 +99,8 @@
                                     <tr th:each="act : ${transaction.achat}">
                                         <td th:text="${act.cryptomonnaie.nom}"></td>
                                         <td th:text="${act.quantite}"></td>
-                                        <td th:text="${act.d_prixUnitaire}"></td>
-                                        <td th:text="${act.d_commission}"></td>
+                                        <td th:text="${act.d_prixUnitaire} + ' $'"></td>
+                                        <td th:text="${act.d_commission} + ' $'"></td>
                                         <td th:text="${#temporals.format(act.dateTransaction, 'yyyy-MM-dd HH:mm:ss')}"></td>
                                     </tr>
                                 </tbody>

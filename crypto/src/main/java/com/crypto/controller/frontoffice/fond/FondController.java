@@ -27,8 +27,8 @@ public class FondController {
     String montant, String dateDemande) {
         try(Connection connection = utilDB.getConnection()) {
             MouvementFond mvt = new MouvementFond(typeDemande, montant, dateDemande);
-            // Utilisateur userActu = (Utilisateur)session.getAttribute("utilisateur");
-            Utilisateur userActu = new Utilisateur(DonneesConfig.tempIdUtilisateur);
+            Utilisateur userActu = (Utilisateur)session.getAttribute("utilisateur");
+            // Utilisateur userActu = new Utilisateur(DonneesConfig.tempIdUtilisateur);
             userActu.demandeActionFond(connection, mvt);
             redirectAttributes.addFlashAttribute("message", "Succès : Demande actuellement en cours de validation");
         } catch (Exception err) {
