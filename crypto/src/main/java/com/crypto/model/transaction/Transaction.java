@@ -3,6 +3,7 @@ package com.crypto.model.transaction;
 import com.crypto.model.crypto.Cryptomonnaie;
 import com.crypto.model.crypto.TransactionCrypto;
 import com.crypto.model.utilisateur.Utilisateur;
+import com.crypto.service.util.Util;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,10 +14,75 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Transaction {
+
     List<TransactionCrypto> vente;
     List<TransactionCrypto> achat;
 
+    public void addTransactionCrypto(TransactionCrypto t) {
+        if(t.estAchat()) {
+            this.getAchat().add(t);
+        }
+        else {
+            this.getVente().add(t);
+        }
+    }
+
+    public void setHistoriqueTransactionsByCriteria(Connection connection, String dateHeureMin, String dateHeureMax, String idUtilisateur, String idCryptomonnaie) throws Exception {
+        String query = "select * from v_transaction_crypto_utilisateur_crypto where 1=1";
+        if(dateHeureMin!=null && !dateHeureMin.isEmpty()) {
+            query += " and dateTransaction >= (?)";
+        }
+        if(dateHeureMax!=null && !dateHeureMax.isEmpty()) {
+            query += " and dateTransaction <= (?)";
+        }
+        if(idUtilisateur!=null && !idUtilisateur.isEmpty()) {
+            query += " and (idVendeur = (?) or idAcheteur=(?))";
+        }
+        if(idCryptomonnaie!=null && !idCryptomonnaie.isEmpty()) {
+            query += " and idcryptomonnaie = (?)";
+        }
+        try(PreparedStatement statement = connection.prepareStatement(query)) {
+            int paramIndex = 1;
+            if(dateHeureMin!=null && !dateHeureMin.isEmpty()) {
+                statement.setTimestamp(paramIndex, Util.formatDateTimeLocalToTimestamp(dateHeureMin));
+                paramIndex++;
+            }
+            if(dateHeureMax!=null && !dateHeureMax.isEmpty()) {
+                statement.setTimestamp(paramIndex, Util.formatDateTimeLocalToTimestamp(dateHeureMax));
+                paramIndex++;
+            }        
+            if(idUtilisateur!=null && !idUtilisateur.isEmpty()) {
+                statement.setString(paramIndex, idUtilisateur); paramIndex++;
+                statement.setString(paramIndex, idUtilisateur); paramIndex++;
+            }
+            if(idCryptomonnaie!=null && !idCryptomonnaie.isEmpty()) {
+                statement.setString(paramIndex, idCryptomonnaie);
+            }
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while(resultSet.next()) {
+                    TransactionCrypto tCrypto = new TransactionCrypto();
+                    tCrypto.setId(resultSet.getString("id"));
+                    tCrypto.setDateTransaction(resultSet.getTimestamp("dateTransaction").toLocalDateTime());
+                    tCrypto.setQuantite(resultSet.getInt("quantite"));
+                    tCrypto.setD_prixUnitaire(resultSet.getDouble("d_prixUnitaire"));
+                    tCrypto.setD_commission(resultSet.getDouble("d_commission"));
+                    tCrypto.setCryptomonnaie(new Cryptomonnaie(resultSet.getString("nomcryptomonnaie"), resultSet.getString("nomcryptomonnaie")));
+                    tCrypto.setUtilisateur(resultSet, resultSet.getString("idacheteur"), resultSet.getString("idvendeur"));
+                    this.addTransactionCrypto(tCrypto);
+                }
+            }
+            catch(Exception e) {
+                throw e;
+            }
+        }
+        catch(Exception er) {
+            throw er;
+        } 
+    }
+
     public Transaction() {
+        this.achat = new ArrayList<>();
+        this.vente = new ArrayList<>();
     }
 
     public List<TransactionCrypto> getVente() {

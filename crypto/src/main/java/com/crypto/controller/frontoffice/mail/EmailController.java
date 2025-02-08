@@ -15,41 +15,41 @@ import java.util.Map;
 @RestController
 public class EmailController {
 
-    @Autowired
-    private EmailService emailService;
+    // @Autowired
+    // private EmailService emailService;
 
-    @Value("${app.base-url}")
-    private String baseUrl;
+    // @Value("${app.base-url}")
+    // private String baseUrl;
 
 
-    /**
-     * Traite l'envoi de l'email.
-     */
-    @GetMapping("/envoyer-mail")
-    public String envoyerMail(Model model, String idAchat) {
-        try {
-            String url = baseUrl+"/confirmerAchat?idAchat="+idAchat;
-            String recepteur = "vetsojoella@gmail.com";
-            String objet = "Mail de confirmation d'achat";
-            String contenu = "<p>Bonjour,</p>"
-                    + "<p>Veuillez cliquer sur le lien suivant pour confirmer votre inscription :</p>"
-                    + "<a href='{{url}}'>Confirmer mon inscription</a>"
-                    + "<p>Cordialement,</p>";
+    // /**
+    //  * Traite l'envoi de l'email.
+    //  */
+    // @GetMapping("/envoyer-mail")
+    // public String envoyerMail(Model model, String idAchat) {
+    //     try {
+    //         String url = baseUrl+"/confirmerAchat?idAchat="+idAchat;
+    //         String recepteur = "vetsojoella@gmail.com";
+    //         String objet = "Mail de confirmation d'achat";
+    //         String contenu = "<p>Bonjour,</p>"
+    //                 + "<p>Veuillez cliquer sur le lien suivant pour confirmer votre inscription :</p>"
+    //                 + "<a href='{{url}}'>Confirmer mon inscription</a>"
+    //                 + "<p>Cordialement,</p>";
 
-            // Contexte avec le lien
-            Map<String, Object> contexte = new HashMap<>();
-            contexte.put("url", url);
-            // Envoi de l'email
-            emailService.envoyerMail(recepteur, contexte, contenu, objet);
+    //         // Contexte avec le lien
+    //         Map<String, Object> contexte = new HashMap<>();
+    //         contexte.put("url", url);
+    //         // Envoi de l'email
+    //         emailService.envoyerMail(recepteur, contexte, contenu, objet);
 
-            // Ajout d'un message de succès pour la vue
-            return("message : Email envoyé avec succès !");
+    //         // Ajout d'un message de succès pour la vue
+    //         return("message : Email envoyé avec succès !");
 
-        } catch (MessagingException e) {
-            // Gestion des erreurs avec un message pour la vue
-            return("erreur Échec de l'envoi de l'email : " + e.getMessage());
-        }
+    //     } catch (MessagingException e) {
+    //         // Gestion des erreurs avec un message pour la vue
+    //         return("erreur Échec de l'envoi de l'email : " + e.getMessage());
+    //     }
         
-    }
+    // }
 }
 

@@ -35,7 +35,7 @@ public class CryptomonnaieUpdater {
 
         Cryptomonnaie cryptomonnaie = new Cryptomonnaie();
         try(Connection connection = utilDB.getConnection()){
-            ChangementCoursCrypto[] changementCoursCryptos = cryptomonnaie.nouveauCours(utilDB.getConnection());
+            ChangementCoursCrypto[] changementCoursCryptos = cryptomonnaie.nouveauCours(connection);
 
             firestoreCryptomonnaie.setCryptomonnaies(changementCoursCryptos);
             firestoreCryptomonnaie.synchroniser();

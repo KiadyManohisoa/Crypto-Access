@@ -28,6 +28,9 @@ INSERT INTO commission (pourcentage, dateChangement, idCryptomonnaie) VALUES
 (16.00, NOW(), 'CRYPTO000000010');
 
 INSERT INTO Utilisateur (mail, nom, prenom, date_naissance) VALUES ('kiadymahisoa@gmail.com', 'Andriamanantsilavo', 'Kiady Manohisoa', '2004-05-19');
+INSERT INTO Utilisateur (mail, nom, prenom, date_naissance) VALUES ('vetsojoella@gmail.com', 'Randrihanja', 'Vetso Joella', '2003-10-01');
+
 INSERT INTO Portefeuille (idUtilisateur) VALUES ('USR000000001');
+INSERT INTO Portefeuille (idUtilisateur) VALUES ('USR000000002');
 
 INSERT INTO fond (montant, dateMouvement, idUtilisateur) VALUES (5000, '2025-02-08 08:00:00', 'USR000000001');

@@ -44,6 +44,45 @@ public class Utilisateur {
     PorteFeuille porteFeuille;
     Fond fond;
 
+    public Utilisateur(String id, String nom, String prenom, Date dateNaissance, String mail, String lienImage) {
+        this.setId(id);
+        this.setNom(nom);
+        this.setPrenom(prenom);
+        this.setDateNaissance(dateNaissance);
+        this.setMail(mail);
+        this.setLienImage(lienImage);
+    }
+
+    public Utilisateur(String id, String nom, String prenom) {
+        this.setId(id);
+        this.setNom(prenom);
+        this.setPrenom(prenom);
+    }
+
+    public static Utilisateur getById(Connection connection, String idU) throws Exception {
+        Utilisateur uCorresp = null;
+        String query = "SELECT * FROM utilisateur WHERE id = (?)";
+        
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, idU);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    String id = resultSet.getString("id");
+                    String nom = resultSet.getString("nom");
+                    String prenom = resultSet.getString("prenom");
+                    String email = resultSet.getString("mail");
+                    Date dateNaissance = resultSet.getDate("date_naissance");
+                    String lienImage = resultSet.getString("lienImage");
+                    uCorresp = new Utilisateur(id, nom, prenom, dateNaissance, email, lienImage);
+                }
+                else {
+                    throw new Exception("Utilisateur introuvable pour l\\'identifiant "+idU);
+                }
+            }
+        }
+        return uCorresp;
+    }
+
     public double verifierFond(int quantite,double valeur,double commission) throws FondInsuffisantException{
         double total=quantite*valeur+(valeur*quantite*commission);
         if(this.getFond().getMontant()<total){
