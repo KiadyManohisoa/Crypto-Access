@@ -34,7 +34,7 @@ public class AuthentificationController {
     FirestoreUtilisateur firestoreUtilisateur ; 
 
     @PostMapping("/connection")
-    public String connection(@ModelAttribute Utilisateur utilisateur, RedirectAttributes redirectAttributes, Model model) {
+    public String connection(@ModelAttribute Utilisateur utilisateur, RedirectAttributes redirectAttributes, Model model, HttpSession session) {
         
         String cheminRedirection = "redirect:/connection";
         
@@ -46,7 +46,10 @@ public class AuthentificationController {
                 model.addAttribute("id", ((Map<String,String>)jsonResponse.getData()).get("id"));
                 model.addAttribute("mail", utilisateur.getMail());
                 model.addAttribute("message", ((Map<String,String>)jsonResponse.getData()).get("message"));
-                cheminRedirection = "pages/frontoffice/utilisateur/confirmationPIN";
+                // cheminRedirection = "pages/frontoffice/utilisateur/confirmationPIN";
+                session.setAttribute("utilisateur", utilisateur);
+                redirectAttributes.addFlashAttribute("message","Connection réussie");
+                cheminRedirection = "redirect:/crypto/accueil";
             } 
             else redirectAttributes.addFlashAttribute("message", jsonResponse.getError());
     

@@ -34,12 +34,13 @@ public class TransactionController {
     public String validerVente(RedirectAttributes redirectAttributes,
             @RequestParam("quantity") int quantity,
             @RequestParam("idportefeuilledetail") String idportefeuilledetail,
-            @RequestParam("date")LocalDateTime dateTransaction) {
+            @RequestParam("date")LocalDateTime dateTransaction, HttpSession session) {
 
         try(Connection connection = this.utilDB.getConnection()) {
             PorteFeuilleDetails portefeuilleDetail = PorteFeuilleDetails.getById(idportefeuilledetail, connection);
-            Utilisateur u=new Utilisateur();
-            u.setId(DonneesConfig.tempIdUtilisateur);
+            Utilisateur u = (Utilisateur) session.getAttribute("utilisateur");
+            // Utilisateur u=new Utilisateur();
+            // u.setId(DonneesConfig.tempIdUtilisateur);
             u.setFond(Fond.getFondByUtilisateur(u, connection));
             u.vendre(connection,portefeuilleDetail,quantity,dateTransaction);
 
@@ -64,8 +65,8 @@ public class TransactionController {
 
             try(Connection connection = utilDB.getConnection()) {
                 Cryptomonnaie crypto=Cryptomonnaie.getById(connection,idcryptommonaie);
-                // Utilisateur u = (Utilisateur) session.getAttribute("utilisateur");
-                Utilisateur u = new Utilisateur(DonneesConfig.tempIdUtilisateur);
+                Utilisateur u = (Utilisateur) session.getAttribute("utilisateur");
+                // Utilisateur u = new Utilisateur(DonneesConfig.tempIdUtilisateur);
                 u.setFond(Fond.getFondByUtilisateur(u, connection));
                 u.setPorteFeuilleByConnection(connection);
                 u.traiterAchat(connection,crypto,quantity,dateTransaction);

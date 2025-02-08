@@ -15,7 +15,6 @@ import com.crypto.service.connection.UtilDB;
 
 import jakarta.servlet.http.HttpSession;
 
-
 @RequestMapping("/admin")
 @Controller
 public class AuthentificationControllerBO {
@@ -28,7 +27,8 @@ public class AuthentificationControllerBO {
         String cheminRedirection = "redirect:/admin/connection";
         try(Connection connection = utilDB.getConnection()) {
             admin.se_connecter(connection);
-            session.setAttribute("utilisateur", admin);
+            session.setAttribute("admin", admin);
+            redirectAttributes.addFlashAttribute("message","Connection réussie");
             cheminRedirection = "redirect:/crypto/admin/accueil";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("message", e.getMessage());

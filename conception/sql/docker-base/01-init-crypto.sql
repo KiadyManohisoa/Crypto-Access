@@ -1,4 +1,3 @@
-
 create database crypto ;
 \c crypto 
 

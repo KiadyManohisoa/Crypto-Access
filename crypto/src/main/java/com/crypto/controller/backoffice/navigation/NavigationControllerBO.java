@@ -72,7 +72,7 @@ public class NavigationControllerBO {
 
     @GetMapping("/admin/deconnection")
     public String deconnection(HttpSession session) {
-        session.removeAttribute("utilisateur");
+        session.removeAttribute("admin");
         return "redirect:/";
     }
 

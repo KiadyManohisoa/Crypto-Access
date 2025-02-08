@@ -29,7 +29,7 @@ public class ValidationFondController {
     @GetMapping("/utilisateur/validerFond")
     public String validerFondUtilisateur(@RequestParam("idFondAttente") String idFond, RedirectAttributes redirectAttributes, HttpSession session) {
         try (Connection co = this.utilDB.getConnection()) {
-            Admin admin =(Admin) session.getAttribute("utilisateur");
+            Admin admin =(Admin) session.getAttribute("admin");
             MouvementFondAttente mvt = new MouvementFondAttente(idFond);
             admin.validerDemandeFond(co, mvt.getById(co));
             redirectAttributes.addFlashAttribute("message", "Succès : Demande de fond validé");

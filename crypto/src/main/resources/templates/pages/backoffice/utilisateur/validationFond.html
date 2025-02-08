@@ -15,8 +15,8 @@
           <h1>Section utilisateurs</h1>
           <nav>
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="accueil.html">Accueil</a></li>
-              <li class="breadcrumb-item"> <a href=""> Utilisateurs </a> </li>
+                <li class="breadcrumb-item"> <a th:href="@{/crypto/accueil}"> Accueil </a> </li>
+                <li class="breadcrumb-item"> <a href="#"> Utilisateurs </a> </li>
               <li class="breadcrumb-item"> Dépôts & retraits en attente </li>
             </ol>
           </nav>
@@ -44,7 +44,7 @@
                                     <tr th:each="depot : ${depots}">
                                         <td th:text="${depot.id}"></td>
                                         <td th:text="${depot.utilisateur.nom + ' ' + depot.utilisateur.prenom}"></td>
-                                        <td th:text="${depot.montant}"></td>
+                                        <td th:text="${depot.montant} + ' $'"></td>
                                         <td th:text="${#temporals.format(depot.dateMouvement, 'yyyy-MM-dd HH:mm:ss')}"></td>
                                         <td> <a th:href="@{/crypto/utilisateur/validerFond(idFondAttente=${depot.id}, typeDemande=1)}">Valider</a> </td>
                                     </tr>
@@ -73,7 +73,7 @@
                                     <tr th:each="retrait : ${retraits}">
                                         <td th:text="${retrait.id}"></td>
                                         <td th:text="${retrait.utilisateur.nom + ' ' + retrait.utilisateur.prenom}"></td>
-                                        <td th:text="${retrait.montant}"></td>
+                                        <td th:text="${retrait.montant} + ' $'"></td>
                                         <td th:text="${#temporals.format(retrait.dateMouvement, 'yyyy-MM-dd HH:mm:ss')}"></td>
                                         <td> <a th:href="@{/crypto/utilisateur/validerFond(idFondAttente=${retrait.id}, typeDemande=-1)}">Valider</a> </td>
                                     </tr>                                    

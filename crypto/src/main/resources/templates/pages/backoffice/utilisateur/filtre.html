@@ -14,8 +14,8 @@
         <h1>Section utilisateurs</h1>
         <nav>
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"> <a th:href="@{/accueil}"> Accueil </a> </li>
-                <li class="breadcrumb-item"><a th:href="@{/accueil}">Utilisateurs</a></li>
+                <li class="breadcrumb-item"> <a th:href="@{/crypto/accueil}"> Accueil </a> </li>
+                <li class="breadcrumb-item"> <a href="#"> Utilisateurs </a> </li>
                 <li class="breadcrumb-item">Filtre</li>
             </ol>
         </nav>
@@ -59,11 +59,11 @@
                             <tbody>
                             <tr th:each="result : ${resultats}">
                                 <td th:text="${result.u.id} + ' ' + ${result.u.nom} + ' ' + ${result.u.prenom}" >Utilisateur</td>
-                                <td th:text="${result.totalAchat}">Total Achat</td>
-                                <td th:text="${result.totalVente}">Total Vente</td>
+                                <td th:text="${result.totalAchat} + ' $'">Total Achat</td>
+                                <td th:text="${result.totalVente} + ' $'">Total Vente</td>
                                 <td>
                                     <div th:each="pf : ${result.ptd}">
-                                        <p th:text="${pf.cryptomonnaie.nom} + ' (' + ${pf.quantite} + ')' +  'Valeur : ' + ${pf.cryptomonnaie.valeur * pf.quantite}">Crypto (Quantité)</p>
+                                        <p th:text="${pf.cryptomonnaie.nom} + ' (' + ${pf.quantite} + ')' +  ' Valeur : ' + ${pf.cryptomonnaie.valeur * pf.quantite} + ' $'">Crypto (Quantité)</p>
                                     </div>
                                 </td>
                             </tr>
