@@ -28,7 +28,7 @@ public class AuthentificationControllerBO {
         String cheminRedirection = "redirect:/admin/connection";
         try(Connection connection = utilDB.getConnection()) {
             admin.se_connecter(connection);
-            session.setAttribute("admin", admin);
+            session.setAttribute("utilisateur", admin);
             cheminRedirection = "redirect:/crypto/admin/accueil";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("message", e.getMessage());

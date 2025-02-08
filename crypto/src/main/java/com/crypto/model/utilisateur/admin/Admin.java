@@ -5,6 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import com.crypto.exception.authentification.ConnectionEchoueException;
+import com.crypto.model.fond.Fond;
+import com.crypto.model.fond.MouvementFondAttente;
+import com.crypto.model.utilisateur.Utilisateur;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +21,23 @@ public class Admin {
     String id;
     String nom;
     String mdp;
+
+    public void validerDemandeFond(Connection connection, MouvementFondAttente mvt) throws Exception {
+        try {
+            if(mvt.estDepot()) {
+                mvt.transfererVersFond(connection);
+            }
+            else {
+                Utilisateur utilisant = mvt.getUtilisateur();
+                utilisant.setFond(Fond.getFondByUtilisateur(utilisant, connection));
+                utilisant.checkValeurRetrait(mvt);
+                mvt.transfererVersFond(connection);
+            }
+        }
+        catch(Exception e) {
+            throw e;
+        }
+    }
 
     // Constructeur
     public Admin(String nom, String mdp) {

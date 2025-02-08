@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 
 @NoArgsConstructor
 public class TransactionCrypto {
+    
     String id ;
     LocalDateTime dateTransaction;
     int quantite;
@@ -17,6 +18,22 @@ public class TransactionCrypto {
     Cryptomonnaie cryptomonnaie;
     Utilisateur acheteur;
     Utilisateur vendeur ;
+
+    public void setUtilisateur(ResultSet resultSet, String idAcheteur, String idVendeur) throws Exception {
+        if(idAcheteur!=null && !idAcheteur.isEmpty()) {
+            this.setAcheteur(new Utilisateur(resultSet.getString("idacheteur"), resultSet.getString("nomacheteur"), resultSet.getString("prenomAcheteur"), resultSet.getDate("datenaissanceacheteur"), resultSet.getString("mailacheteur"), resultSet.getString("lienimageacheteur")));
+        }
+        else if(idVendeur!=null && !idVendeur.isEmpty()) {
+            this.setVendeur(new Utilisateur(resultSet.getString("idvendeur"), resultSet.getString("nomvendeur"), resultSet.getString("prenomvendeur"), resultSet.getDate("datenaissancevendeur"), resultSet.getString("mailvendeur"), resultSet.getString("lienimagevendeur")));  
+        }
+    }
+
+    public boolean estAchat() {
+        if(this.getAcheteur()!=null) {
+            return true;
+        }
+        return false;
+    }
 
 
     public String getId() {

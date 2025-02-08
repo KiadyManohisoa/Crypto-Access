@@ -20,6 +20,10 @@ public class MouvementFond {
     LocalDateTime dateMouvement;
     TransactionCrypto transactionCrypto;
 
+    public MouvementFond(String i) {
+        this.setId(i);
+    }
+
     public MouvementFond(String typeDemande, String montant, String dateDemande) throws Exception {
         this.setMontant(montant);
         this.setSigne(Integer.valueOf(typeDemande));

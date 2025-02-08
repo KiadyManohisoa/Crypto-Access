@@ -11,9 +11,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.crypto.model.commission.analyse.Analyseur;
 import com.crypto.model.crypto.Cryptomonnaie;
 import com.crypto.model.crypto.analyse.TypeAnalyse;
+import com.crypto.model.fond.MouvementFondAttente;
+import com.crypto.model.utilisateur.Utilisateur;
 import com.crypto.service.connection.UtilDB;
+import com.google.api.Http;
 
 import jakarta.servlet.http.HttpSession;
+
 
 @RequestMapping("/crypto")
 @Controller
@@ -21,6 +25,20 @@ public class NavigationControllerBO {
         
     @Autowired
     private UtilDB utilDB ;
+
+    @GetMapping("/utilisateur/fondEnAttente")
+    public String listeFondsEnAttente(Model model) {
+        try (Connection co = this.utilDB.getConnection()) {
+            MouvementFondAttente mvt = new MouvementFondAttente();
+            model.addAttribute("depots", mvt.getDepotsEnAttentes(co));
+            model.addAttribute("retraits", mvt.getRetraitsEnAttentes(co));
+        }
+        catch(Exception e) {
+            model.addAttribute("message", e.getMessage());
+        }
+        return new String("pages/backoffice/utilisateur/validationFond");
+    }
+    
 
     @GetMapping("/utilisateur/filtre")
     public String getFormFiltreUtilisateur() {
@@ -54,7 +72,7 @@ public class NavigationControllerBO {
 
     @GetMapping("/admin/deconnection")
     public String deconnection(HttpSession session) {
-        session.removeAttribute("admin");
+        session.removeAttribute("utilisateur");
         return "redirect:/";
     }
 

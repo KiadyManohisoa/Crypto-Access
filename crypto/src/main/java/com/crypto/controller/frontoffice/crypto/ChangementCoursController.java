@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.crypto.model.crypto.Cryptomonnaie;
 import com.crypto.service.connection.UtilDB;
 
+import java.sql.Connection;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,8 +24,8 @@ public class ChangementCoursController {
     public String changerCours(@RequestParam String param) {
 
         Cryptomonnaie cryptomonnaie = new Cryptomonnaie();
-        try{
-            cryptomonnaie.nouveauCours(utilDB.getConnection());
+        try(Connection conn = this.utilDB.getConnection()){
+            cryptomonnaie.nouveauCours(conn);
         } catch(Exception err) {
             return new String(err.getMessage());
         }

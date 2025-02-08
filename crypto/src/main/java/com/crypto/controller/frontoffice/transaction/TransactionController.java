@@ -1,5 +1,6 @@
 package com.crypto.controller.frontoffice.transaction;
 
+import com.crypto.config.DonneesConfig;
 import com.crypto.model.crypto.Cryptomonnaie;
 import com.crypto.model.firebase.AchatVente;
 import com.crypto.model.fond.Fond;
@@ -35,11 +36,10 @@ public class TransactionController {
             @RequestParam("idportefeuilledetail") String idportefeuilledetail,
             @RequestParam("date")LocalDateTime dateTransaction) {
 
-        try {
-            Connection connection = utilDB.getConnection();
+        try(Connection connection = this.utilDB.getConnection()) {
             PorteFeuilleDetails portefeuilleDetail = PorteFeuilleDetails.getById(idportefeuilledetail, connection);
             Utilisateur u=new Utilisateur();
-            u.setId("USR000000013");
+            u.setId(DonneesConfig.tempIdUtilisateur);
             u.setFond(Fond.getFondByUtilisateur(u, connection));
             u.vendre(connection,portefeuilleDetail,quantity,dateTransaction);
 
@@ -47,7 +47,8 @@ public class TransactionController {
             envoyerVersFirebase(achatVente) ;
 
             redirectAttributes.addFlashAttribute("message", "Vente effectuée avec succès !");
-            } catch (Exception err) {
+        } 
+        catch (Exception err) {
             redirectAttributes.addFlashAttribute("message", "Erreur : " + err.getMessage());
         }
         return "redirect:/crypto/vente";
@@ -64,7 +65,7 @@ public class TransactionController {
             try(Connection connection = utilDB.getConnection()) {
                 Cryptomonnaie crypto=Cryptomonnaie.getById(connection,idcryptommonaie);
                 // Utilisateur u = (Utilisateur) session.getAttribute("utilisateur");
-                Utilisateur u = new Utilisateur("USR000000013");
+                Utilisateur u = new Utilisateur(DonneesConfig.tempIdUtilisateur);
                 u.setFond(Fond.getFondByUtilisateur(u, connection));
                 u.setPorteFeuilleByConnection(connection);
                 u.traiterAchat(connection,crypto,quantity,dateTransaction);

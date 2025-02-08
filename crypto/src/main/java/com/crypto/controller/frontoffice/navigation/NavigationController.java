@@ -19,6 +19,7 @@ import com.crypto.model.crypto.ChangementCoursCrypto;
 import com.crypto.model.crypto.Cryptomonnaie;
 import com.crypto.model.crypto.analyse.Analyseur;
 import com.crypto.model.portefeuille.PorteFeuilleDetails;
+import com.crypto.model.transaction.Transaction;
 import com.crypto.model.utilisateur.Genre;
 import com.crypto.model.utilisateur.Utilisateur;
 import com.crypto.service.connection.UtilDB;
@@ -32,14 +33,29 @@ public class NavigationController {
     @Autowired
     private UtilDB utilDB ;
 
+    @GetMapping("/historique/transactions")
+    public String getToFormHistoriquesTransactions(Model model) {
+        try(Connection connection = utilDB.getConnection()) {
+            Transaction transaction = new Transaction();
+            transaction.setHistoriqueTransactionsByCriteria(connection, "","", "", "");
+            Cryptomonnaie [] cryptos = Cryptomonnaie.getAll(connection);
+            List<Utilisateur> utilisateurs = Utilisateur.getAll(connection);
+            model.addAttribute("utilisateurs", utilisateurs);
+            model.addAttribute("cryptos", cryptos);
+            model.addAttribute("transaction", transaction);
+
+        } catch (Exception e) {
+            model.addAttribute("message", e.getMessage());
+        }
+        return "pages/frontoffice/accueil/historique/historiqueTransaction";
+    }
     
     @GetMapping("/vente")
     public String vente(Model model, HttpSession session) {
         // String idUtilisateur = ((Utilisateur)session.getAttribute("utilisateur")).getId();
         String idUtilisateur = "USR000000001";
 
-        try {
-            Connection conn=utilDB.getConnection();
+        try(Connection conn = utilDB.getConnection()) {
             Utilisateur u=new Utilisateur();
             u.setId(idUtilisateur);
             u.setPorteFeuilleByConnection(conn);
