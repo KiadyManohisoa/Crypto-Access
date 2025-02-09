@@ -1,16 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import NavBar from '../components/NavBar';
 import theme from '../styles/theme';
 import { useNavigation } from '@react-navigation/native';
-import {useUser} from "../contexts/Context";
+import { useCryptos, useUser } from "../contexts/Context";
+import { getPortefeuilles } from "../services/TransactionCryptoService";
 
 const ProfileScreen = () => {
     const navigation = useNavigation();
-    const {utilisateur} =useUser();
+    const { utilisateur } = useUser();
     const user = utilisateur;
+    const { cryptos } = useCryptos();
+
+    const [portefeuilles, setPortefeuilles] = useState([]);
+
+    // Charger les cryptos de l'utilisateur
+    useEffect(() => {
+        const fetchPortefeuilles = async () => {
+            const data = await getPortefeuilles(user.id, cryptos);
+            setPortefeuilles(data);
+        };
+
+        fetchPortefeuilles();
+    }, [user.id, cryptos]);
+
     const pickImage = async (fromCamera) => {
         let result;
         if (fromCamera) {
@@ -38,7 +53,7 @@ const ProfileScreen = () => {
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 {/* Photo de profil */}
                 <Image
-                    source={user.urlPicture ? { uri: user.urlPicture } : require('../../assets/male.webp')}
+                    source={user.urlPicture ? { uri: user.urlPicture } : require('../../assets/user.png')}
                     style={styles.profileImage}
                 />
 
@@ -60,17 +75,24 @@ const ProfileScreen = () => {
 
                 {/* Solde actuel après les icônes */}
                 <View style={styles.balanceContainer}>
-                    <Text style={styles.balanceText}>💰 Solde actuel : 0 €</Text>
+                    <Text style={styles.balanceText}>💰 Solde actuel : {user.solde}€</Text>
                 </View>
 
                 {/* Liste des cryptos détenues */}
                 <Text style={styles.sectionTitle}>Mes Cryptos</Text>
 
+                {/* Affichage du portefeuille */}
+                {portefeuilles.length === 0 ? (
+                    <Text style={styles.noCryptoText}>Aucune crypto détenue</Text>
+                ) : (
+                    portefeuilles.map((crypto) => (
+                        <View key={crypto.idCrypto} style={styles.cryptoItem}>
+                            <Text style={styles.cryptoName}>{crypto.nom}</Text>
+                            <Text style={styles.cryptoQuantity}>{crypto.quantite}</Text>
+                        </View>
+                    ))
+                )}
 
-                {/* Bouton de déconnexion */}
-                <TouchableOpacity style={styles.logOutButton} onPress={() => navigation.navigate('Login')}>
-                    <Ionicons name="log-out" size={30} color={theme.colors.text} />
-                </TouchableOpacity>
             </ScrollView>
 
             {/* Barre de navigation */}
@@ -131,17 +153,17 @@ const styles = StyleSheet.create({
         color: theme.colors.primary,
         fontWeight: '700',
     },
-    soldeText: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: theme.colors.text,
-        marginBottom: 20,
-    },
     sectionTitle: {
         fontSize: 18,
         fontWeight: 'bold',
         color: theme.colors.text,
         marginBottom: 10,
+    },
+    noCryptoText: {
+        fontSize: 16,
+        color: theme.colors.secondary,
+        textAlign: 'center',
+        marginVertical: 10,
     },
     cryptoItem: {
         flexDirection: 'row',
@@ -159,16 +181,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         color: theme.colors.text,
-    },
-    logOutButton: {
-        backgroundColor: theme.colors.primary,
-        width: 60,
-        height: 60,
-        borderRadius: 30,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 20,
-        alignSelf: 'center',
     },
 });
 

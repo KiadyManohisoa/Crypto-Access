@@ -16,7 +16,6 @@ export default function HomeScreen() {
       <View style={styles.container}>
         <Header
             title="Home"
-            profileImage={require('../../assets/male.webp')}
         />
         <Text style={styles.title}>Bienvenue {utilisateur.nom} {utilisateur.prenom}  🚀</Text>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>

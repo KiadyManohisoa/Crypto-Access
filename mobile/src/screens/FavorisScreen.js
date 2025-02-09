@@ -1,95 +1,110 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Modal, StyleSheet, useWindowDimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {View, Text, FlatList, TouchableOpacity, Modal, StyleSheet, useWindowDimensions, Image} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import NavBar from '../components/NavBar';
-import Header from "../components/Header";
+import { useUser } from '../contexts/Context';
+import { useCryptos } from '../contexts/Context';
+import {getFavorisById, createFavori, deleteFavori, getFavorisCryptoById} from '../services/FavorisService';
 import theme from '../styles/theme';
-
-const availableCryptos = [
-    { id: '1', nom: 'Bitcoin', valeur: '$43,000' },
-    { id: '2', nom: 'Ethereum', valeur: '$3,200' },
-    { id: '3', nom: 'Ripple', valeur: '$1.20' },
-    { id: '4', nom: 'Litecoin', valeur: '$150' }
-];
-
-export default function FavorisScreen() { // <-- C'est ici l'unique export par défaut
+import Header from '../components/Header';
+import NavBar from '../components/NavBar';
+import {getCryptoByIdFromList, getImagePath} from "../services/CryptosService";
+export default function FavorisScreen() {
+    const { utilisateur } = useUser();
+    const { cryptos } = useCryptos();
     const { height } = useWindowDimensions();
-    const [favorites, setFavorites] = useState([
-        { id: '1', nom: 'Bitcoin', valeur: '$43,000' },
-        { id: '2', nom: 'Ethereum', valeur: '$3,200' }
-    ]);
+    const [favorites, setFavorites] = useState([]);
+    const [nonFavorites, setNonFavorites] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
-    const [selectedCrypto, setSelectedCrypto] = useState("");
+    const [selectedCrypto, setSelectedCrypto] = useState(null);
 
-    const removeFavorite = (id) => {
-        setFavorites(favorites.filter(fav => fav.id !== id));
-    };
-
-    const addFavorite = () => {
-        if (selectedCrypto === "") return; // Ne rien ajouter si aucune crypto n'est sélectionnée
-        const cryptoToAdd = availableCryptos.find(crypto => crypto.id === selectedCrypto);
-        if (cryptoToAdd) {
-            setFavorites([...favorites, cryptoToAdd]);
-            setSelectedCrypto(""); // Réinitialiser après ajout
-            setModalVisible(false);
+    useEffect(() => {
+        if (utilisateur) {
+            fetchFavorites();
         }
+    }, [utilisateur, cryptos]);
+
+    const fetchFavorites = async () => {
+        if (!utilisateur) return;
+        const favoris = await getFavorisCryptoById(utilisateur.id, cryptos);
+        setFavorites(favoris);
+
+        // Filtrer les cryptos pour obtenir celles qui ne sont PAS encore en favoris
+        const favorisIds = favoris.map(fav => fav.idCrypto);
+        const filteredNonFavorites = cryptos.filter(crypto => !favorisIds.includes(crypto.idCrypto));
+        setNonFavorites(filteredNonFavorites);
     };
 
-    const nonFavoriteCryptos = availableCryptos.filter(crypto => !favorites.some(fav => fav.id === crypto.id));
+    const addFavorite = async () => {
+        if (!selectedCrypto || !utilisateur) return;
+        const newFavorite = getCryptoByIdFromList(selectedCrypto, cryptos);
+        setFavorites([...favorites, newFavorite]);
+        createFavori(utilisateur.id, selectedCrypto);
+        setModalVisible(false);
+        setSelectedCrypto(null); // Réinitialiser la sélection après ajout
+        fetchFavorites(); // Rafraîchir les non-favorites
+    };
+
+    const removeFavorite = async (idCrypto) => {
+        if (!utilisateur) return;
+
+        const removedCrypto = favorites.find(fav => fav.idCrypto === idCrypto);
+
+        const updatedFavorites = favorites.filter(fav => fav.idCrypto !== idCrypto);
+        setFavorites(updatedFavorites);
+
+        if (removedCrypto) {
+            setNonFavorites([...nonFavorites, removedCrypto]);
+        }
+
+        await deleteFavori(utilisateur.id, idCrypto);
+    };
+
 
     return (
         <View style={styles.container}>
-            <Header
-                title="Favoris"
-                profileImage={require('../../assets/male.webp')}
-            />
+            <Header title="Favoris"  />
 
             <FlatList
                 data={favorites}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item.idCrypto}
+                ListEmptyComponent={<Text style={styles.emptyMessage}>Pas de Favoris Pour Le Moment</Text>}
                 renderItem={({ item }) => (
                     <View style={styles.item}>
+                        <Image source={getImagePath(item.nom)} style={styles.notificationLogo} />
                         <Text style={styles.nom}>{item.nom}</Text>
-                        <Text style={styles.valeur}>{item.valeur}</Text>
-                        <TouchableOpacity onPress={() => removeFavorite(item.id)}>
-                            <Icon nom="heart" size={24} color="red" />
+                        <TouchableOpacity onPress={() => removeFavorite(item.idCrypto)}>
+                            <Icon name="heart" size={24} color="red" />
                         </TouchableOpacity>
                     </View>
                 )}
-                ListHeaderComponent={<Text style={styles.title}>Favorites</Text>}
-                contentContainerStyle={styles.scrollContent}
             />
 
-            {/* Bouton Ajouter */}
             <TouchableOpacity
                 style={[styles.addButton, { bottom: height * 0.15 }]}
-                onPress={() => setModalVisible(true)}
-            >
-                <Icon nom="plus" size={30} color="white" />
+                onPress={() => setModalVisible(true)}>
+                <Icon name="plus" size={30} color={theme.colors.text} />
             </TouchableOpacity>
 
-            {/* Modal d'ajout */}
             <Modal visible={modalVisible} animationType="slide" transparent>
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Add Favorite</Text>
+                        <Text style={styles.modalTitle}>Ajouter un favori</Text>
                         <Picker
                             selectedValue={selectedCrypto}
                             onValueChange={(itemValue) => setSelectedCrypto(itemValue)}
-                            style={styles.picker}
-                        >
-                            <Picker.Item label="Select a crypto" valeur="" />
-                            {nonFavoriteCryptos.map(crypto => (
-                                <Picker.Item key={crypto.id} label={crypto.nom} valeur={crypto.id} />
+                            style={styles.picker}>
+                            <Picker.Item label="Sélectionnez Crypto" value={null} />
+                            {nonFavorites.map(crypto => (
+                                <Picker.Item key={crypto.idCrypto} label={crypto.nom} value={crypto.idCrypto} />
                             ))}
                         </Picker>
                         <View style={styles.buttonsContainer}>
                             <TouchableOpacity style={styles.modalButton} onPress={addFavorite}>
-                                <Text style={styles.modalButtonText}>Create</Text>
+                                <Text style={styles.modalButtonText}>Ajouter</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.modalButton} onPress={() => setModalVisible(false)}>
-                                <Text style={styles.modalButtonText}>Cancel</Text>
+                                <Text style={styles.modalButtonText}>Annuler</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -101,41 +116,30 @@ export default function FavorisScreen() { // <-- C'est ici l'unique export par d
     );
 }
 
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: theme.colors.background,
         padding: 20,
     },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: theme.colors.primary,
-        marginBottom: 20,
-    },
-    scrollContent: {
-        paddingBottom: 90,
-    },
     item: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: 15,
-        backgroundColor: '#333',
+        backgroundColor: theme.colors.surface,
         borderRadius: 10,
         marginBottom: 10,
     },
     nom: {
-        color: 'white',
+        color: theme.colors.text,
         fontSize: 18,
-    },
-    valeur: {
-        color: theme.colors.primary,
-        fontSize: 16,
     },
     addButton: {
         position: 'absolute',
         right: 20,
+        bottom: '15%',
         backgroundColor: theme.colors.primary,
         width: 60,
         height: 60,
@@ -151,7 +155,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.5)',
     },
     modalContent: {
-        backgroundColor: theme.colors.secondary,
+        backgroundColor: theme.colors.surface,
         padding: 20,
         borderRadius: 10,
         width: '80%',
@@ -174,7 +178,7 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     modalButton: {
-        backgroundColor: theme.colors.secondary,
+        backgroundColor: theme.colors.primary,
         padding: 10,
         borderRadius: 5,
         flex: 1,
@@ -184,5 +188,20 @@ const styles = StyleSheet.create({
     modalButtonText: {
         color: theme.colors.text,
         fontWeight: 'bold',
+    },
+    notificationLogo: {
+        width: 40,
+        height: 40,
+        marginRight: 10,
+    },
+    valeur: {
+        color: theme.colors.primary,
+        fontSize: 16,
+    },
+    emptyMessage: {
+        textAlign: 'center',
+        fontSize: 18,
+        marginTop: 20,
+        color: theme.colors.primary,
     },
 });

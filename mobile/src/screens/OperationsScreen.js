@@ -3,13 +3,14 @@ import { View, Text, TouchableOpacity, StyleSheet, Modal, TextInput, Alert, Scro
 import NavBar from '../components/NavBar';
 import Header from "../components/Header";
 import theme from '../styles/theme';
+import {addOperation} from "../services/OperationsService";
+import {useUser} from "../contexts/Context";
 
 const OperationsScreen = () => {
     const [selectedTab, setSelectedTab] = useState('depot');
     const [amount, setAmount] = useState('');
     const [passwordModalVisible, setPasswordModalVisible] = useState(false);
-    const [password, setPassword] = useState('');
-
+    const {utilisateur} = useUser();
     const handleTransaction = () => {
         if (!amount) {
             Alert.alert('Erreur', 'Veuillez entrer un montant');
@@ -19,21 +20,14 @@ const OperationsScreen = () => {
     };
 
     const confirmTransaction = () => {
-        if (password === '1234') {
-            console.log(`Transaction de ${selectedTab} de ${amount}€ réussie`);
-            setPasswordModalVisible(false);
-            setAmount('');
-            setPassword('');
-        } else {
-            Alert.alert('Erreur', 'Mot de passe incorrect');
-        }
+       addOperation(utilisateur.id ,amount , selectedTab );
+        setPasswordModalVisible(false);
     };
 
     return (
         <View style={styles.container}>
             <Header
                 title="Opérations"
-                profileImage={require('../../assets/male.webp')}
             />
 
             <Text style={styles.title}>Opérations Crypto</Text>
@@ -78,13 +72,7 @@ const OperationsScreen = () => {
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>Confirmation</Text>
-                        <TextInput
-                            style={styles.passwordInput}
-                            placeholder="Entrez votre mot de passe"
-                            secureTextEntry
-                            value={password}
-                            onChangeText={setPassword}
-                        />
+
                         <View style={styles.modalButtonContainer}>
                             <TouchableOpacity
                                 style={styles.modalButton}
@@ -125,7 +113,7 @@ const styles = StyleSheet.create({
     },
     tabsContainer: {
         flexDirection: 'row',
-        backgroundColor: theme.colors.secondary,
+        backgroundColor: theme.colors.surface,
         borderRadius: 10,
         marginBottom: 20,
     },
@@ -147,7 +135,7 @@ const styles = StyleSheet.create({
         fontWeight: '700',
     },
     amountContainer: {
-        backgroundColor: theme.colors.secondary,
+        backgroundColor: theme.colors.surface,
         borderRadius: 10,
         padding: 10,
         marginBottom: 20,

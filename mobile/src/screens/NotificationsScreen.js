@@ -36,9 +36,7 @@ const NotificationsScreen = () => {
         <View style={styles.container}>
             <Header
                 title="Notifications"
-                profileImage={require('../../assets/male.webp')}
             />
-            <Text style={styles.title}>Crypto Alerts</Text>
             <ScrollView style={styles.notificationsContainer}>
                 {cryptoNotifications.map((crypto) => (
                     <View key={crypto.id} style={styles.notificationItem}>
@@ -81,7 +79,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     notificationItem: {
-        backgroundColor: theme.colors.secondary,
+        backgroundColor: theme.colors.surface,
         padding: 15,
         marginBottom: 10,
         borderRadius: 10,
@@ -105,7 +103,7 @@ const styles = StyleSheet.create({
     },
     cryptoPrice: {
         fontSize: 14,
-        color: theme.colors.secondaryText,
+        color: theme.colors.text,
     },
     cryptoChange: {
         fontSize: 14,

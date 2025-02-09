@@ -44,7 +44,7 @@ const   Header = ({
                         onPress={() => navigation.navigate("Main", { screen: ("Profile") }) }
                     >
                         <Image
-                            source={profileImage || require('../../assets/male.webp')}
+                            source={profileImage || require('../../icon/mipmap-xxxhdpi/ic_launcher_round.webp')}
                             style={styles.profileImage}
                         />
                     </TouchableOpacity>
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: theme.colors.secondary,
+        backgroundColor: theme.colors.surface,
         paddingHorizontal: 15,
         paddingVertical: 10,
         ...theme.shadow,

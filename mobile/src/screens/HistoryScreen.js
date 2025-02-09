@@ -1,41 +1,88 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import NavBar from '../components/NavBar';
 import Header from '../components/Header';
 import theme from '../styles/theme';
+import {useCryptos, useUser} from "../contexts/Context";
+import {getAllTransactionsAchats, getAllTransactionsVentes} from "../services/TransactionCryptoService";
+import {getCryptoByIdFromList} from "../services/CryptosService";
+import {convertFirestoreTimestampToDate} from "../services/UtiliService";
 
 const HistoryScreen = () => {
-    const [balance, setBalance] = useState(1000);
+    const { utilisateur } = useUser();
+    const { cryptos } = useCryptos();
     const [selectedTab, setSelectedTab] = useState('achat');
+    const [purchaseHistory, setPurchaseHistory] = useState([]);
+    const [saleHistory, setSaleHistory] = useState([]);
 
-    const purchaseHistory = [
-        { id: 1, date: '2025-02-01', amount: 200, description: 'Achat produit A' },
-        { id: 2, date: '2025-02-03', amount: 150, description: 'Achat produit B' },
-    ];
+    useEffect(() => {
+        if (utilisateur && utilisateur.id) {
+            fetchHistories(utilisateur.id);
+        }
+    }, [utilisateur]);
 
-    const saleHistory = [
-        { id: 1, date: '2025-02-02', amount: 300, description: 'Vente produit C' },
-        { id: 2, date: '2025-02-04', amount: 100, description: 'Vente produit D' },
-    ];
+    const fetchHistories = async (userId) => {
+        try {
+            const achats = await getAllTransactionsAchats(utilisateur.id);
+            const ventes = await getAllTransactionsVentes(utilisateur.id);
+
+            setPurchaseHistory(formatTransactions(achats));
+            setSaleHistory(formatTransactions(ventes));
+        } catch (error) {
+            console.error("Erreur lors de la récupération des transactions:", error);
+        }
+    };
+    const formatTransactions = (transactions) => {
+        return transactions.map((transaction, i) => {
+            const crypto = getCryptoByIdFromList(transaction.idcrypto, cryptos);
+            return {
+                id: i, // Utilisation de l'indice i comme id
+                date: convertFirestoreTimestampToDate(transaction.dateheure) ,
+                amount: transaction.quantite, // Quantité au lieu du prix
+                description: crypto ? crypto.nom : "Crypto inconnue"
+            };
+        });
+    };
 
     const renderHistory = () => {
         const history = selectedTab === 'achat' ? purchaseHistory : saleHistory;
-        return history.map((item) => (
-            <View key={item.id} style={styles.historyItem}>
-                <View style={styles.historyItemHeader}>
-                    <Text style={styles.historyDate}>{item.date}</Text>
-                    <Text style={[styles.historyAmount, selectedTab === 'achat' ? styles.negativeChange : styles.positiveChange]}>
-                        {selectedTab === 'achat' ? '-' : '+'} {item.amount}€
-                    </Text>
+
+        if (history.length === 0) {
+            return (
+                <Text style={styles.emptyMessage}>
+                    {selectedTab === 'achat' ? "Pas d'achats pour le moment..." : "Pas de ventes pour le moment..."}
+                </Text>
+            );
+        }
+
+        return (
+            <View>
+                <View style={styles.historyHeader}>
+                    <Text style={styles.columnTitle}>Crypto Et DateHeure</Text>
+                    <Text style={styles.columnTitle}>Quantité</Text>
                 </View>
-                <Text style={styles.historyDescription}>{item.description}</Text>
+                {history.map((item) => (
+                    <View key={item.id} style={styles.historyItem}>
+                        <Text style={styles.historyDescription}>{item.description}</Text>
+                        <View style={styles.historyItemHeader}>
+                            <Text style={styles.historyDate}>{item.date}</Text>
+                            <Text style={[
+                                styles.historyAmount,
+                                selectedTab === 'achat' ? styles.positiveChange : styles.negativeChange
+                            ]}>
+                                {selectedTab === 'achat' ? '+' : ''} {item.amount}
+                            </Text>
+                        </View>
+                    </View>
+                ))}
             </View>
-        ));
+        );
     };
+
 
     return (
         <View style={styles.container}>
-            <Header title="Historique" profileImage={require('../../assets/male.webp')} />
+            <Header title="Historique" />
 
             <View style={styles.tabsContainer}>
                 <TouchableOpacity
@@ -67,24 +114,9 @@ const styles = StyleSheet.create({
         backgroundColor: theme.colors.background,
         padding: 20,
     },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: theme.colors.primary,
-        marginBottom: 20,
-    },
-    balanceContainer: {
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    balanceText: {
-        fontSize: 22,
-        color: theme.colors.primary,
-        fontWeight: '700',
-    },
     tabsContainer: {
         flexDirection: 'row',
-        backgroundColor: theme.colors.secondary,
+        backgroundColor: theme.colors.surface,
         borderRadius: 10,
         marginBottom: 20,
     },
@@ -109,7 +141,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     historyItem: {
-        backgroundColor: theme.colors.secondary,
+        backgroundColor: theme.colors.surface,
         padding: 15,
         marginBottom: 10,
         borderRadius: 10,
@@ -122,11 +154,13 @@ const styles = StyleSheet.create({
     historyDate: {
         color: theme.colors.text,
         fontSize: 14,
+        marginTop:10,
     },
     historyAmount: {
         fontSize: 16,
         fontWeight: '700',
         padding: 6,
+        marginBottom:10,
         borderRadius: 6,
     },
     positiveChange: {
@@ -136,9 +170,29 @@ const styles = StyleSheet.create({
         color: theme.colors.error,
     },
     historyDescription: {
-        color: theme.colors.text,
-        fontSize: 14,
+        color: theme.colors.primary,
+        fontSize: 20,
     },
+    emptyMessage: {
+        textAlign: 'center',
+        color: theme.colors.text,
+        fontSize: 16,
+        marginVertical: 20,
+    },
+    historyHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingVertical: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: theme.colors.text,
+        marginBottom: 10,
+    },
+    columnTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: theme.colors.primary,
+    },
+
 });
 
 export default HistoryScreen;

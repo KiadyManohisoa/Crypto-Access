@@ -10,9 +10,8 @@ import LoadingScreen from './LoadingScreen';
 export default function LoginScreen() {
   const navigation = useNavigation();
   const { loginUser } = useUser();
-  const { cryptos } = useCryptos(); // Add this to ensure cryptos are loaded
-  const [email, setEmail] = useState('jean@gmail.com');
-  const [password, setPassword] = useState('123456');
+  const [email, setEmail] = useState('leadupuis@gmail.com');
+  const [password, setPassword] = useState('Lea15031992');
   const [secureText, setSecureText] = useState(true);
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -53,7 +52,7 @@ export default function LoginScreen() {
 
   return (
       <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        <Image style={styles.logo} source={require('../../assets/btc-logo.webp')} />
+        <Image style={styles.logo} source={require('../../icon/mipmap-xxxhdpi/ic_launcher_round.webp')} />
         <Text style={[styles.title, { color: theme.colors.primary }]}>CoinS Mada</Text>
 
         <TextInput
@@ -95,7 +94,6 @@ export default function LoginScreen() {
   );
 }
 
-// Styles remain the same as in the original code
 
 const styles = StyleSheet.create({
   container: {

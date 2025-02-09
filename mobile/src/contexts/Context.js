@@ -39,19 +39,30 @@ export const UserProvider = ({ children }) => {
         </UserContext.Provider>
     );
 };
-
 export const CryptoProvider = ({ children }) => {
     const [cryptos, setCryptos] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const { utilisateur } = useUser(); // Vérifier si l'utilisateur est chargé
 
     useEffect(() => {
+        let interval;
+
         const fetchCryptos = async () => {
             const data = await getAllCryptos();
             setCryptos(data);
-            setIsLoading(false); // Fin du chargement une fois les cryptos récupérées
+            setIsLoading(false);
         };
-        fetchCryptos();
-    }, []);
+
+        // Démarrer l'intervalle seulement si l'utilisateur est initialisé
+        if (utilisateur) {
+            fetchCryptos(); // Charger une première fois
+            interval = setInterval(fetchCryptos, 10000); // Actualisation toutes les 10s
+        }
+
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [utilisateur]); // Lancer la mise à jour seulement après l'initialisation de l'utilisateur
 
     return (
         <CryptoContext.Provider value={{ cryptos, setCryptos, isLoading }}>
@@ -59,3 +70,4 @@ export const CryptoProvider = ({ children }) => {
         </CryptoContext.Provider>
     );
 };
+

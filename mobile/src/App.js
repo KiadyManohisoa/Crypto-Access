@@ -16,7 +16,6 @@ import CoursScreen from "./screens/CoursScreen";
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// ✅ Vérifie si l'utilisateur est connecté avant d'afficher les onglets
 const MainTabs = () => {
     const { user } = useUser();
 
@@ -25,7 +24,7 @@ const MainTabs = () => {
     }
 
     return (
-        <Tab.Navigator
+        <Tab.Navigator id={"TabNavigator"}
             screenOptions={{
                 headerShown: false,
                 tabBarStyle: { display: "none" }
@@ -47,7 +46,7 @@ export default function App() {
         <UserProvider>
             <CryptoProvider>
                 <NavigationContainer>
-                    <Stack.Navigator screenOptions={{ headerShown: false }}>
+                    <Stack.Navigator screenOptions={{ headerShown: false }} id={"Navigator"}>
                         {/* Écran de connexion */}
                         <Stack.Screen name="Login" component={LoginScreen} />
 

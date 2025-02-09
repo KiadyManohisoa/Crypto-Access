@@ -35,6 +35,7 @@ export const handleLogin = async (
         // Ensure cryptos are loaded (optional, depending on your requirements)
         await getAllCryptos();
 
+
         // Navigate to main screen after successful initialization
         navigation.replace('Main');
     } catch (error) {
