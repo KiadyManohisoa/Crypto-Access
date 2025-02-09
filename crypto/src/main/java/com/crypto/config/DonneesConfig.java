@@ -24,7 +24,7 @@ public class DonneesConfig {
     static final String secondeConsideree = "secondes considere" ;
     static final String variationCrypto = "variation crypto" ;
 
-    public static final String tempIdUtilisateur = "USR000000001";
+    // public static final String tempIdUtilisateur = "USR000000001";
     
     public double getFrequenceCrypto(Connection connection) throws Exception {
         String sql = "SELECT * from configuration where id = ? " ; 

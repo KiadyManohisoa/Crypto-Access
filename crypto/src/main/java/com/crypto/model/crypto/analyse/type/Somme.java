@@ -24,17 +24,14 @@ public class Somme extends TypeAnalyse {
             TransactionCrypto sommeTransaction = new TransactionCrypto();
             sommeTransaction.setCryptomonnaie(transactions.get(0).getCryptomonnaie());
             sommeTransaction.setD_commission(somme);
-            System.out.println("\n Tsy null ka");
+            // System.out.println("\n Tsy null ka");
             return sommeTransaction;
-        }
-        else {
-            System.out.println("\n otran null anie izy zany eh");
         }
         return null;
     }
 
     public TransactionCrypto[] appliquerTypeAnalyseCommission(HashMap<String, List<TransactionCrypto>> transactions){
-        System.out.println("are we even here ?");
+        // System.out.println("are we even here ?");
         List<TransactionCrypto> resultats = new ArrayList<>();
         for (Map.Entry<String, List<TransactionCrypto>> entry : transactions.entrySet()) {
             List<TransactionCrypto> listeChangements = entry.getValue();

@@ -8,6 +8,8 @@ import com.crypto.model.portefeuille.PorteFeuilleDetails;
 import com.crypto.model.utilisateur.Utilisateur;
 import com.crypto.service.connection.UtilDB;
 import com.crypto.service.firebase.FirestoreTransaction;
+import com.crypto.service.firebase.FirestoreUtilisateur;
+import com.crypto.service.util.Util;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -18,6 +20,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.sql.Connection;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Controller
@@ -29,6 +33,9 @@ public class TransactionController {
 
     @Autowired 
     FirestoreTransaction firestoreTransaction ; 
+
+    @Autowired 
+    FirestoreUtilisateur firestoreUtilisateur ;
 
     @PostMapping("/vente/valider")
     public String validerVente(RedirectAttributes redirectAttributes,
@@ -42,11 +49,14 @@ public class TransactionController {
             // Utilisateur u=new Utilisateur();
             // u.setId(DonneesConfig.tempIdUtilisateur);
             u.setFond(Fond.getFondByUtilisateur(u, connection));
-            u.vendre(connection,portefeuilleDetail,quantity,dateTransaction);
+            double mttObtenu = u.vendre(connection,portefeuilleDetail,quantity,dateTransaction);
 
             AchatVente achatVente = new AchatVente(u, new Utilisateur(),portefeuilleDetail.getCryptomonnaie(), dateTransaction, quantity);
             envoyerVersFirebase(achatVente) ;
 
+            
+            firestoreUtilisateur.envoyerFond(Util.getMap(u, mttObtenu), "fonds");
+            
             redirectAttributes.addFlashAttribute("message", "Vente effectuée avec succès !");
         } 
         catch (Exception err) {
@@ -69,10 +79,12 @@ public class TransactionController {
                 // Utilisateur u = new Utilisateur(DonneesConfig.tempIdUtilisateur);
                 u.setFond(Fond.getFondByUtilisateur(u, connection));
                 u.setPorteFeuilleByConnection(connection);
-                u.traiterAchat(connection,crypto,quantity,dateTransaction);
+                double mttSoustrait = u.traiterAchat(connection,crypto,quantity,dateTransaction);
 
                 AchatVente achatVente = new AchatVente(new Utilisateur(), u,  crypto, dateTransaction, quantity);
                 envoyerVersFirebase(achatVente) ;
+
+                firestoreUtilisateur.envoyerFond(Util.getMap(u, mttSoustrait), "fonds");
 
                 redirectAttributes.addFlashAttribute("message", "Achat effectuée avec succès !");
             } catch (Exception err) {
@@ -87,4 +99,5 @@ public class TransactionController {
         firestoreTransaction.setAchatVente(achatVente);
         firestoreTransaction.synchroniser();
     }
+
 }

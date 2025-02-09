@@ -26,7 +26,7 @@ public class SynchronisationFirebase {
 
     @Scheduled(fixedRate = DonneesConfig.FREQUENCE_FIREBASE) // Toutes les 10 secondes
     public void synchronisation() throws Exception {
-        System.out.println("Synchronisation ...");
+        // System.out.println("Synchronisation ...");
         try (Connection connection = utilDB.getConnection()) {
             firestoreRecuperation.synchroniser(connection);
         } catch (Exception e) {

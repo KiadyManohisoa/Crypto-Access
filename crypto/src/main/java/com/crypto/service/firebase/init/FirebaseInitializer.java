@@ -18,7 +18,8 @@ public class FirebaseInitializer {
     @PostConstruct
     public void initialize() throws IOException {
         if (FirebaseApp.getApps().isEmpty()) { // Vérification pour éviter l'erreur
-            ClassPathResource serviceAccount = new ClassPathResource("crytpo-f999a-firebase-adminsdk-fbsvc-dadebf6ef4.json");
+            // ClassPathResource serviceAccount = new ClassPathResource("crytpo-f999a-firebase-adminsdk-fbsvc-dadebf6ef4.json");
+            ClassPathResource serviceAccount = new ClassPathResource("first-firebase-5ca70-firebase-adminsdk-rnsw9-9e05a112bf.json");
 
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount.getInputStream()))

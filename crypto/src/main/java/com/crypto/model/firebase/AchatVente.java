@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.crypto.model.crypto.Cryptomonnaie;
 import com.crypto.model.utilisateur.Utilisateur;
+import com.google.cloud.firestore.FieldValue;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,6 +49,8 @@ public class AchatVente {
         data.put("nomCrypto", getCryptomonnaie().getNom());
         data.put("quantite", getQuantite());
         data.put("dateTransaction", getDateTransaction());
+        // data.put("dateTransaction", FieldValue.serverTimestamp());
+
 
 
         return data ; 

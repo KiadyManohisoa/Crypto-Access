@@ -90,7 +90,7 @@ public class AuthentificationController {
             redirectAttributes.addFlashAttribute("mail", mail);
             redirectAttributes.addFlashAttribute("message", e.getMessage());
         }
-        System.out.println("Redirection ...");
+        // System.out.println("Redirection ...");
         return cheminRedirection;
     }
 

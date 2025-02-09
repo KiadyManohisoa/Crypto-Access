@@ -147,7 +147,7 @@ public class ChangementCoursCrypto {
         } 
 
         String query = queryBuilder.toString();
-        System.out.println("Requete est "+query);
+        // System.out.println("Requete est "+query);
 
         // Préparer la requête et définir les paramètres dynamiquement
         try (PreparedStatement statement = connection.prepareStatement(query)) {

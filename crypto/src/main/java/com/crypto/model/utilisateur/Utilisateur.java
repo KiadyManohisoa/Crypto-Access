@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.crypto.exception.fond.FondInsuffisantException;
 import com.crypto.exception.model.ValeurInvalideException;
@@ -43,6 +44,15 @@ public class Utilisateur {
     Transaction transaction;
     PorteFeuille porteFeuille;
     Fond fond;
+
+    public Utilisateur(Map<String, Object> utilisateurData) {
+        setId((String)utilisateurData.get("id"));
+        setNom((String)utilisateurData.get("nom"));
+        setMail((String)utilisateurData.get("mail"));
+        setLienImage((String)utilisateurData.get("lienImage"));
+        setPrenom((String)utilisateurData.get("prenom"));
+        setDateNaissance((Date)utilisateurData.get("date_naissance"));
+    }
 
     public Utilisateur(String id, String nom, String prenom, Date dateNaissance, String mail, String lienImage) {
         this.setId(id);
@@ -91,14 +101,15 @@ public class Utilisateur {
         return total;
     }
 
-    public void traiterAchat(Connection conn, Cryptomonnaie cryptomonnaie, int quantiteACheter, LocalDateTime dateTransaction) throws Exception {
+    public double traiterAchat(Connection conn, Cryptomonnaie cryptomonnaie, int quantiteACheter, LocalDateTime dateTransaction) throws Exception {
         cryptomonnaie.setCommission(conn,dateTransaction);
         double commissionCoresp = cryptomonnaie.getCommission().getPourcentageSansPourcentage() * quantiteACheter ; 
         double total=verifierFond(quantiteACheter,cryptomonnaie.getValeur(), commissionCoresp);
-        this.acheter(conn, cryptomonnaie, quantiteACheter, dateTransaction, total);
+        return this.acheter(conn, cryptomonnaie, quantiteACheter, dateTransaction, total);
     }
 
-    public void acheter(Connection conn, Cryptomonnaie cryptomonnaie, int quantiteACheter, LocalDateTime dateTransaction, double total) throws QuantitéInsuffisanteException,Exception {
+    public double acheter(Connection conn, Cryptomonnaie cryptomonnaie, int quantiteACheter, LocalDateTime dateTransaction, double total) throws QuantitéInsuffisanteException,Exception {
+        double mttSoustrait = 0;
         TransactionCrypto transactionCrypto = new TransactionCrypto();
         try {
             conn.setAutoCommit(false);
@@ -129,12 +140,12 @@ public class Utilisateur {
             MouvementFond mvtFond=new MouvementFond();
             mvtFond.setDateMouvement(transactionCrypto.getDateTransaction());
             mvtFond.setMontant(transactionCrypto.getD_commission()+(transactionCrypto.getQuantite()*transactionCrypto.getD_prixUnitaire()));
+            mttSoustrait = mvtFond.getMontant();
             mvtFond.setSigne(-1);
             mvtFond.setTransactionCrypto(transactionCrypto);
             mvtFond.insert(conn,this);
             this.getFond().setMontant(montantact);
             conn.commit();
-
 
         } catch (Exception e) {
             if (conn != null) {
@@ -144,6 +155,7 @@ public class Utilisateur {
         } finally {
             conn.setAutoCommit(true);
         }
+        return mttSoustrait;
     }
 
 
@@ -292,8 +304,8 @@ public class Utilisateur {
     }
     public void setTransaction(Connection c,LocalDateTime dateMax) {
         this.transaction = Transaction.getTransactionByUtilisateur(this,c,dateMax);
-        System.out.println("tailleacha"+this.transaction.getAchat().size());
-        System.out.println("taillevente"+this.transaction.getVente().size());
+        // System.out.println("tailleacha"+this.transaction.getAchat().size());
+        // System.out.println("taillevente"+this.transaction.getVente().size());
     }
 
     @JsonProperty("genre")
@@ -345,7 +357,8 @@ public class Utilisateur {
         setMail(mail);
     }
 
-    public void vendre(Connection conn, PorteFeuilleDetails porteFeuilleDetail, int quantiteAvendre, LocalDateTime dateTransaction) throws QuantitéInsuffisanteException,Exception {
+    public double vendre(Connection conn, PorteFeuilleDetails porteFeuilleDetail, int quantiteAvendre, LocalDateTime dateTransaction) throws QuantitéInsuffisanteException,Exception {
+        double montantObtenu = 0;
         TransactionCrypto transactionCrypto = new TransactionCrypto();
         try {
             conn.setAutoCommit(false);
@@ -367,6 +380,7 @@ public class Utilisateur {
             MouvementFond mvtFond=new MouvementFond();
             mvtFond.setDateMouvement(transactionCrypto.getDateTransaction());
             double mtt = transactionCrypto.getCryptomonnaie().getValeur()*quantiteAvendre-(transactionCrypto.getD_commission());
+            montantObtenu=mtt;
             mvtFond.setMontant(mtt);
             mvtFond.setTransactionCrypto(transactionCrypto);
             mvtFond.insert(conn,this);
@@ -384,6 +398,7 @@ public class Utilisateur {
         } finally {
             conn.setAutoCommit(true);
         }
+        return montantObtenu;
 
     }
 
@@ -448,7 +463,7 @@ public class Utilisateur {
     }
 
     public void insert(Connection connection) throws Exception {
-        System.out.println("Appel de la fonction insert");
+        // System.out.println("Appel de la fonction insert");
         try {
             connection.setAutoCommit(false);
             insertUtilisateur(connection);
@@ -513,7 +528,7 @@ public class Utilisateur {
                 statement.setString(1, utilisateur.getLienImage());
                 statement.setString(2, utilisateur.getId());
     
-                System.out.println("Données: " + utilisateur.toString());
+                // System.out.println("Données: " + utilisateur.toString());
     
                 statement.addBatch(); 
             }
