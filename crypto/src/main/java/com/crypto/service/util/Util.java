@@ -6,9 +6,19 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.crypto.model.utilisateur.Utilisateur;
 
 public class Util {
 
+    public static Map<String, Object> getMap(Utilisateur utilisateur, double montant) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("utilisateur", utilisateur.getId());
+        map.put("montant", montant);
+        return map;
+    }
     public static Timestamp getDateTimeActuelle() {
         LocalDateTime localDateTime = LocalDateTime.now();
         return Timestamp.valueOf(localDateTime);

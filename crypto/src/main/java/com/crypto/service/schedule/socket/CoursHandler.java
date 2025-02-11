@@ -28,13 +28,13 @@ public class CoursHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         sessions.remove(session);
-        System.out.println("Session supprimée : " + session.getId() + " - Nombre total de sessions : " + sessions.size());
+        // System.out.println("Session supprimée : " + session.getId() + " - Nombre total de sessions : " + sessions.size());
     }
 
     public void signal(String nouveauCours) throws Exception {
-        System.out.println("Nombre de sessions actives : " + sessions.size());
+        // System.out.println("Nombre de sessions actives : " + sessions.size());
         for (WebSocketSession session : sessions) {
-            System.out.println("Envoi du signal à la session : " + session.getId());
+            // System.out.println("Envoi du signal à la session : " + session.getId());
             session.sendMessage(new TextMessage(nouveauCours));
         }
     }

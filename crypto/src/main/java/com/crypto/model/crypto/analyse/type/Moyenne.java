@@ -31,7 +31,7 @@ public class Moyenne extends TypeAnalyse {
     }
 
     public TransactionCrypto[] appliquerTypeAnalyseCommission(HashMap<String, List<TransactionCrypto>> transactions){
-        System.out.println("are we even here ?");
+        // System.out.println("are we even here ?");
         List<TransactionCrypto> resultats = new ArrayList<>();
         for (Map.Entry<String, List<TransactionCrypto>> entry : transactions.entrySet()) {
             List<TransactionCrypto> listeChangements = entry.getValue();

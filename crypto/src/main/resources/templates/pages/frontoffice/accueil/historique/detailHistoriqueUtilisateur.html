@@ -39,11 +39,11 @@
                                 <div class="col-md-8">
                                     <h4 class="card-title">Détails de l'utilisateur</h4>
                                     <ul class="list-group list-group-flush">
-                                        <li class="list-group-item" th:text="${utilisateur.id}"><strong>Identifiant :</strong> </li>
-                                        <li class="list-group-item" th:text="${utilisateur.nom}"><strong>Nom :</strong> </li>
-                                        <li class="list-group-item" th:text="${utilisateur.prenom}"><strong>Prénom :</strong> </li>
-                                        <li class="list-group-item" th:text="${utilisateur.mail}"><strong>Mail :</strong> </li>
-                                        <li class="list-group-item" th:text="${utilisateur.dateNaissance}"><strong>Date de naissance :</strong> </li>
+                                        <li class="list-group-item" th:text="'Identifiant : '+${utilisateur.id}"><strong>Identifiant :</strong> </li>
+                                        <li class="list-group-item" th:text="'Nom : ' + ${utilisateur.nom}"><strong>Nom :</strong> </li>
+                                        <li class="list-group-item" th:text="'Prenom : ' + ${utilisateur.prenom}"><strong>Prénom :</strong> </li>
+                                        <li class="list-group-item" th:text="'Mail : ' + ${utilisateur.mail}"><strong>Mail :</strong> </li>
+                                        <li class="list-group-item" th:text="'Date de naissance : ' + ${utilisateur.dateNaissance}"><strong>Date de naissance :</strong> </li>
                                     </ul>
                                 </div>
                             </div>

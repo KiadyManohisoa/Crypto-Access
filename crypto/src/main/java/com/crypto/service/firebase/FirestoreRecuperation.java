@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.messaging.tcp.TcpConnection;
 import org.springframework.stereotype.Service;
 
 import com.crypto.model.firebase.DemandeUtilisateur;
@@ -19,7 +18,6 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
@@ -89,9 +87,8 @@ public class FirestoreRecuperation {
     
     public HistoriqueOperationUtilisateur[] getHistoriqueApres(Timestamp date) throws Exception {
         List<HistoriqueOperationUtilisateur> documents = new ArrayList<>();
-        
-        try {
     
+        try {
             // Exécuter la requête pour obtenir les historiques après la date donnée
             ApiFuture<QuerySnapshot> future = getFirebaseInitializer()
                     .getFirestore()
@@ -102,26 +99,19 @@ public class FirestoreRecuperation {
             List<QueryDocumentSnapshot> queryDocuments = future.get().getDocuments();
     
             for (QueryDocumentSnapshot queryDocument : queryDocuments) {
-                ApiFuture<DocumentSnapshot> utilisateurFuture = queryDocument.getReference()
-                    .collection("utilisateur") // Accès à la sous-collection
-                    .document("utilisateurId") // ID du document (fixé dans ta structure)
-                    .get();
+                // Récupérer l'objet "utilisateur" directement dans le document
+                Map<String, Object> utilisateurData = (Map<String, Object>) queryDocument.get("utilisateur");
     
-                DocumentSnapshot utilisateurDoc = utilisateurFuture.get();
-                if (utilisateurDoc.exists()) {
-                    String idUtilisateur = utilisateurDoc.getString("idUtilisateur");
-                    String lienImage = utilisateurDoc.getString("lienImage");
+                if (utilisateurData != null) {
+
+                    Utilisateur utilisateur = new Utilisateur(utilisateurData) ;
     
-                    // Créer l'objet utilisateur si besoin
-                    Utilisateur utilisateur = new Utilisateur(idUtilisateur);
-                    utilisateur.setLienImage(lienImage);
-    
-                    // Associer l'utilisateur à l'historique
+                    // Création de l'historique avec l'utilisateur associé
                     HistoriqueOperationUtilisateur doc = new HistoriqueOperationUtilisateur(
-                        queryDocument.getId(),
-                        utilisateur,
-                        queryDocument.getString("operation"),
-                        new java.sql.Timestamp(queryDocument.getTimestamp("dateChangement").toDate().getTime())
+                            queryDocument.getId(),
+                            utilisateur,
+                            queryDocument.getString("operation"),
+                            new java.sql.Timestamp(queryDocument.getTimestamp("dateChangement").toDate().getTime())
                     );
                     documents.add(doc);
                 }
@@ -133,6 +123,7 @@ public class FirestoreRecuperation {
     
         return documents.toArray(new HistoriqueOperationUtilisateur[0]);
     }
+    
     
     public HistoriqueCryptoFavori[] getCryptoFavori(Timestamp date) throws Exception {
 

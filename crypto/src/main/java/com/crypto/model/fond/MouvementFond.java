@@ -124,7 +124,7 @@ public class MouvementFond {
     public void setDateMouvement(String dateDemande) throws ValeurInvalideException {
         try {
             String formattedDateDmd = dateDemande.replace("T", " ") + ":00";
-            System.out.println("\n date demande formatée : "+formattedDateDmd+"\n");
+            // System.out.println("\n date demande formatée : "+formattedDateDmd+"\n");
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             LocalDateTime date = LocalDateTime.parse(formattedDateDmd, formatter);       
             this.setDateMouvement(date);

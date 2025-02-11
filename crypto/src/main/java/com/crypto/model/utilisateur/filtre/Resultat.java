@@ -53,7 +53,7 @@ public class Resultat {
     public static List<Resultat> getResultatByDate(LocalDateTime dateMax, Connection c) throws Exception{
         List<Resultat> resultats=new ArrayList<>();
         List<Utilisateur> listeU=Utilisateur.getAll(c);
-        System.out.println("utilisateur"+listeU.size());
+        // System.out.println("utilisateur"+listeU.size());
         if(dateMax==null) {
             dateMax = LocalDateTime.now();
         }
