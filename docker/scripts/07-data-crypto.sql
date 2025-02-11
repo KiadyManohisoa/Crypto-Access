@@ -60,7 +60,7 @@ INSERT INTO commission (pourcentage, dateChangement, idCryptomonnaie) VALUES
 
 INSERT INTO utilisateur (mail, nom, prenom, date_naissance, lienimage) VALUES
 ('leadupuis@gmail.com', 'DUPUIS', 'Léa', '1992-03-15', NULL),
-('lucmartin@hotmail.com', 'MARTIN', 'Luc', '1988-07-02', 'https://res.cloudinary.com/ds4y4okg3/image/upload/v1739164860/xblp9rxd1zyktjlvjyvw.png');
+('lucmartin@hotmail.com', 'MARTIN', 'Luc', '1988-07-02', 'https://res.cloudinary.com/ds4y4okg3/image/upload/v1739164860/xblp9rxd1zyktjlvjyvw.png'),
 ('sophiebernard@gmail.com', 'BERNARD', 'Sophie', '1995-11-29', NULL),
 ('marcrobert@gmail.com', 'ROBERT', 'Marc', '1990-06-18', NULL),
 ('emiliedurand@ymail.com', 'DURAND', 'Émilie', '1987-09-05', NULL),
@@ -68,7 +68,7 @@ INSERT INTO utilisateur (mail, nom, prenom, date_naissance, lienimage) VALUES
 ('claireleroy@ymail.com', 'LEROY', 'Claire', '1989-12-10', NULL),
 ('nicolasandre@gmail.com', 'ANDRÉ', 'Nicolas', '1991-02-08', NULL),
 ('alicemoreau@hotmail.com', 'MOREAU', 'Alice', '1994-08-25', NULL),
-('antoinesimon@ymail.com', 'SIMON', 'Antoine', '1986-01-14', NULL),
+('antoinesimon@ymail.com', 'SIMON', 'Antoine', '1986-01-14', NULL);
 
 
 INSERT INTO portefeuille (idutilisateur) VALUES
